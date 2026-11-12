@@ -1,0 +1,11 @@
+/target/
+/tmp/
+/output/
+/.idea/
+/.commandcode/
+*.log
+
+# Reference documents and generated verification artifacts
+*.pdf
+/TEST_RESULTS.md
+/scripts/
