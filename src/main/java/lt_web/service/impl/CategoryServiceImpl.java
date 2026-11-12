@@ -20,4 +20,5 @@ public class CategoryServiceImpl implements CategoryService {
     @Override public Category get(String name) { return dao.get(name); }
     @Override public List<Category> getAll() { return dao.getAll(); }
     @Override public List<Category> search(String keyword) { return keyword == null || keyword.isBlank() ? getAll() : dao.search(keyword.trim()); }
+    @Override public long count() { return dao.count(); }
 }

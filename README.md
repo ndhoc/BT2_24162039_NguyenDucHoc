@@ -2,16 +2,20 @@
 
 **Sinh viên:** Nguyễn Đức Học – **MSSV:** 24162039.
 
-Ứng dụng giữ nguyên chức năng của Bài tập 01 nhưng tầng truy cập dữ liệu đã được chuyển từ JDBC sang **JPA (Hibernate)**: entity ánh xạ bảng, `EntityManager` cho mọi thao tác, `persistence.xml` cấu hình kết nối SQL Server.
+Ứng dụng cửa hàng công nghệ: giữ nguyên chức năng của Bài tập 01 nhưng tầng truy cập dữ liệu dùng **JPA (Hibernate)**, bổ sung trang chủ, trang danh mục sản phẩm cho người dùng và dashboard cho quản trị.
 
 ## Chức năng
 
-- Login tại `/login`: xác thực bằng JPA và lưu tài khoản trong Session; phiên hết hạn sau 30 phút không hoạt động.
-- Tùy chọn **Ghi nhớ đăng nhập bằng Cookie**: Cookie sống 30 phút và tự phục hồi Session khi quay lại. Cookie chứa token ngẫu nhiên, HttpOnly, SameSite=Lax; bảng `RememberToken` chỉ lưu SHA-256 của token (entity `RememberToken`).
-- Register tại `/register`: kiểm tra dữ liệu, xác nhận mật khẩu và trùng username/email/phone; thành viên mới luôn có roleid=5. Mật khẩu lưu bằng PBKDF2-HMAC-SHA256 có salt.
-- Điều hướng `/waiting`: roleid 1 → `/admin/home`, 2 → `/manager/home`, 5 → `/home`.
-- Logout: hủy Session, thu hồi token trong bảng `RememberToken`, xóa Cookie ghi nhớ và `JSESSIONID`.
-- **CRUD Category bằng JPA**: danh sách, tìm kiếm, thêm/sửa/xóa, tải và hiển thị ảnh PNG/JPEG; sửa không chọn ảnh sẽ giữ ảnh cũ; thay ảnh/xóa danh mục sẽ dọn ảnh cũ. Xóa có trang xác nhận và POST.
+- **Trang chủ `/`**: giới thiệu cửa hàng, danh mục sản phẩm và 6 sản phẩm nổi bật.
+- **Danh mục sản phẩm `/products`**: lọc theo danh mục, tìm kiếm theo tên, hiển thị 8 sản phẩm mẫu kèm ảnh và giá.
+- **Dashboard `/dashboard`**: dành cho admin và manager, thống kê số sản phẩm, danh mục, người dùng, tổng giá trị và sản phẩm mới nhất.
+- **Đăng nhập `/login`** và **đăng ký `/register`**:
+  - Admin (roleid 1) và manager (roleid 2) sau khi đăng nhập vào thẳng `/dashboard`.
+  - Thành viên (roleid 5) sau khi đăng nhập vào thẳng `/products`.
+  - Login có tùy chọn **Ghi nhớ đăng nhập bằng Cookie**: token ngẫu nhiên, HttpOnly, SameSite=Lax, sống 30 phút; bảng `RememberToken` chỉ lưu SHA-256 của token.
+  - Register kiểm tra dữ liệu, xác nhận mật khẩu và trùng username/email/phone; mật khẩu lưu bằng PBKDF2-HMAC-SHA256 có salt.
+- **Quản lý danh mục** (chỉ admin): danh sách, tìm kiếm, thêm/sửa/xóa, tải và hiển thị ảnh PNG/JPEG.
+- **Logout**: hủy Session, thu hồi token trong `RememberToken`, xóa Cookie ghi nhớ và `JSESSIONID`.
 - Filter xác thực/phân quyền, CSRF cho POST, UTF-8, JSP xuất dữ liệu bằng `c:out`.
 
 ## Công nghệ
@@ -25,26 +29,27 @@
 File `src/main/resources/META-INF/persistence.xml`:
 
 - Persistence unit `jpa-hibernate-mysql` dùng provider `org.hibernate.jpa.HibernatePersistenceProvider`.
-- Khai báo 3 entity: `lt_web.model.User`, `lt_web.model.Category`, `lt_web.model.RememberToken`.
+- Khai báo 4 entity: `lt_web.model.User`, `lt_web.model.Category`, `lt_web.model.Product`, `lt_web.model.RememberToken`.
 - Kết nối SQL Server: `databaseName=MVC_24162039`, user `sa`, mật khẩu `123456` (sửa theo máy của bạn).
 - `hibernate.hbm2ddl.auto=update`: Hibernate tự tạo/cập nhật bảng khi khởi động lần đầu.
 - `hibernate.show_sql`/`hibernate.format_sql`: in câu lệnh SQL ra log Tomcat để quan sát.
 
 `JpaUtil` tạo một `EntityManagerFactory` dùng chung, mở `EntityManager` cho mỗi thao tác và quản lý transaction (`read`/`write`). `JpaLifecycleListener` đóng factory khi ứng dụng dừng.
 
-## Tạo cơ sở dữ liệu
+## Cơ sở dữ liệu và ảnh sản phẩm
 
-Có hai cách, chọn một:
+Database `MVC_24162039` gồm 4 bảng: `[User]`, `Category`, `Product`, `RememberToken`.
 
-1. **Để Hibernate tự tạo bảng**: chỉ cần database `MVC_24162039` tồn tại; `hbm2ddl.auto=update` sẽ tạo bảng từ entity.
-2. **Chạy script** `database/schema.sql` rồi `database/seed.sql` trong SSMS, DBeaver hoặc sqlcmd để có sẵn dữ liệu mẫu.
+Chạy `database/schema.sql` rồi `database/seed.sql` để tạo bảng và nạp dữ liệu mẫu (3 danh mục, 8 sản phẩm, 3 tài khoản):
 
 ```powershell
 sqlcmd -S tcp:localhost,1433 -U sa -C -b -f 65001 -i database/schema.sql
 sqlcmd -S tcp:localhost,1433 -U sa -C -b -f 65001 -i database/seed.sql
 ```
 
-Nếu database chưa có, tạo trước bằng `CREATE DATABASE MVC_24162039;`. `trustServerCertificate=true` dùng cho SQL Server local với chứng chỉ tự ký.
+Nếu database chưa có, tạo trước bằng `CREATE DATABASE MVC_24162039;`. Script có kiểm tra tồn tại nên chạy lại không nhân đôi dữ liệu.
+
+Ảnh sản phẩm mẫu nằm trong `src/main/webapp/images/products/` (`dell-xps.png`, `iphone-15.png`, `clean-code.png`, …) và được phục vụ trực tiếp từ WAR. Ảnh đại diện danh mục do admin tải lên lưu tại `CATALINA_BASE/uploads/category` (đổi bằng **UPLOAD_DIR** hoặc JVM property **app.upload.dir**).
 
 ## Build và chạy
 
@@ -55,8 +60,6 @@ mvn clean package
 
 Copy `target/BT2_24162039_NguyenDucHoc.war` vào `TOMCAT_HOME/webapps`, rồi khởi động Tomcat. Với cổng mặc định 8080, mở **http://localhost:8080/BT2_24162039_NguyenDucHoc/**.
 
-Ảnh mặc định lưu tại `CATALINA_BASE/uploads/category`, ngoài WAR; có thể đổi bằng **UPLOAD_DIR** hoặc JVM property **app.upload.dir**.
-
 ### Import vào Spring Tools/Eclipse
 
 1. File → Import → Maven → Existing Maven Projects → chọn thư mục chứa `pom.xml`.
@@ -66,35 +69,35 @@ Copy `target/BT2_24162039_NguyenDucHoc.war` vào `TOMCAT_HOME/webapps`, rồi kh
 
 ## Tài khoản mẫu
 
-| Tài khoản | Mật khẩu | Vai trò |
-| --- | --- | --- |
-| admin | 123456 | Quản trị viên, được CRUD Category |
-| manager | 123456 | Quản lý |
-| user | 123456 | Thành viên |
-
-(Dữ liệu mẫu nằm trong `database/seed.sql`.)
+| Tài khoản | Mật khẩu | Vai trò | Sau đăng nhập |
+| --- | --- | --- | --- |
+| admin | 123456 | Quản trị viên | `/dashboard` + quản lý danh mục |
+| manager | 123456 | Quản lý | `/dashboard` |
+| user | 123456 | Thành viên | `/products` |
 
 ## Cấu trúc MVC ba tầng
 
 ```text
 src/main/java/lt_web/
-  controllers/       Servlet nhận request và chọn JSP
-  filters/           UTF-8, xác thực, phân quyền và CSRF
-  model/             Entity JPA: User, Category, RememberToken
+  controllers/       Servlet: Index, Product, Dashboard, Login, Register, Category, ...
+  filters/           UTF-8, xác thực, phân quyền, CSRF
+  model/             Entity JPA: User, Category, Product, RememberToken
   service/           Interface nghiệp vụ
   service/impl/      Validation và xử lý nghiệp vụ
   dao/               Interface truy cập dữ liệu
   dao/impl/          DAO dùng EntityManager (JPQL)
   utils/             JpaUtil, Cookie, hash mật khẩu, lưu ảnh
 src/main/resources/META-INF/persistence.xml
-src/main/webapp/views/     JSP/JSTL
-database/                  Schema và dữ liệu mẫu
+src/main/webapp/views/          index.jsp, products.jsp, dashboard.jsp, login/register, admin/
+src/main/webapp/images/products/ Ảnh sản phẩm mẫu
+database/                       Schema và dữ liệu mẫu
 ```
 
 ## Kiểm tra thủ công
 
-1. Dùng `admin / 123456` để đăng nhập; thử cả khi bỏ chọn và chọn **Ghi nhớ đăng nhập bằng Cookie**.
-2. Đăng ký tài khoản mới, kiểm tra báo lỗi trùng thông tin và mật khẩu xác nhận.
-3. Đăng nhập bằng tài khoản mới; thành viên không có quyền truy cập trang quản trị.
-4. Dùng admin để thêm, tìm kiếm, sửa và xóa danh mục, thử tải/thay ảnh.
-5. Đăng xuất để kết thúc Session và xóa Cookie ghi nhớ.
+1. Mở `/` xem trang chủ và sản phẩm nổi bật; mở `/products` lọc theo danh mục và tìm kiếm.
+2. Đăng nhập `admin / 123456` → vào `/dashboard`; từ dashboard mở **Quản lý danh mục** để CRUD danh mục.
+3. Đăng nhập `manager / 123456` → vào `/dashboard` nhưng không thấy nút quản lý danh mục.
+4. Đăng nhập `user / 123456` → vào `/products`; truy cập `/dashboard` bị chặn 403.
+5. Đăng ký tài khoản mới, kiểm tra báo lỗi trùng thông tin và mật khẩu xác nhận.
+6. Đăng xuất để kết thúc Session và xóa Cookie ghi nhớ.

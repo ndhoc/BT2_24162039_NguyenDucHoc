@@ -60,4 +60,9 @@ public class CategoryDaoImpl implements CategoryDao {
             em.remove(managed);
         });
     }
+
+    @Override
+    public long count() {
+        return JpaUtil.read(em -> em.createQuery("select count(c) from Category c", Long.class).getSingleResult());
+    }
 }

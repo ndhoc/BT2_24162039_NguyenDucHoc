@@ -9,4 +9,5 @@ public interface UserService {
     boolean checkExistUsername(String username);
     boolean checkExistEmail(String email);
     boolean checkExistPhone(String phone);
+    long count();
 }

@@ -64,4 +64,9 @@ public class UserDaoImpl implements UserDao {
                 .setParameter("hash", tokenHash)
                 .executeUpdate());
     }
+
+    @Override
+    public long count() {
+        return JpaUtil.read(em -> em.createQuery("select count(u) from AppUser u", Long.class).getSingleResult());
+    }
 }

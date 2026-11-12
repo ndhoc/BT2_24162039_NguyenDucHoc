@@ -10,7 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import lt_web.model.User;
 
-@WebServlet({"/home", "/admin/home", "/manager/home"})
+@WebServlet("/home")
 public class HomeServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
@@ -25,6 +25,7 @@ public class HomeServlet extends HttpServlet {
             return;
         }
 
-        request.getRequestDispatcher("/views/index.jsp").forward(request, response);
+        boolean manager = user.getRoleid() == 1 || user.getRoleid() == 2;
+        response.sendRedirect(request.getContextPath() + (manager ? "/dashboard" : "/products"));
     }
 }

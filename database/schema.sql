@@ -23,6 +23,16 @@ CREATE TABLE dbo.Category (
     icons NVARCHAR(255) NULL
 );
 GO
+IF OBJECT_ID(N'dbo.Product', N'U') IS NULL
+CREATE TABLE dbo.Product (
+    product_id INT IDENTITY(1,1) PRIMARY KEY,
+    product_name NVARCHAR(255) NOT NULL,
+    price DECIMAL(18,2) NOT NULL,
+    image NVARCHAR(255) NULL,
+    description NVARCHAR(1000) NULL,
+    cate_id INT NOT NULL REFERENCES dbo.Category(cate_id)
+);
+GO
 IF OBJECT_ID(N'dbo.RememberToken', N'U') IS NULL
 CREATE TABLE dbo.RememberToken (
     token_hash CHAR(64) PRIMARY KEY,

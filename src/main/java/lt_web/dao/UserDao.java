@@ -13,4 +13,5 @@ public interface UserDao {
     void saveRememberToken(int userId, String tokenHash, Instant expires);
     User findByRememberToken(String tokenHash);
     void deleteRememberToken(String tokenHash);
+    long count();
 }

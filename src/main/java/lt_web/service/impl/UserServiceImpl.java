@@ -20,6 +20,7 @@ public class UserServiceImpl implements UserService {
     @Override public boolean checkExistUsername(String v) { return dao.checkExistUsername(v); }
     @Override public boolean checkExistEmail(String v) { return dao.checkExistEmail(v); }
     @Override public boolean checkExistPhone(String v) { return dao.checkExistPhone(v); }
+    @Override public long count() { return dao.count(); }
 
     @Override public void register(String username, String password, String confirm, String email, String fullname, String phone) {
         username = username == null ? "" : username.trim();

@@ -21,6 +21,7 @@
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
         <class>lt_web.model.User</class>
         <class>lt_web.model.Category</class>
+        <class>lt_web.model.Product</class>
         <class>lt_web.model.RememberToken</class>
         <properties>
             <property name="jakarta.persistence.jdbc.url"

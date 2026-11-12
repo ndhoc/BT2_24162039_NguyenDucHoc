@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Quản lý danh mục | 24162039</title><link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20261110-2"></head><body><main class="card wide">
-<header><div><p class="eyebrow">Quản trị · Nguyễn Đức Học · 24162039</p><h1>Quản lý danh mục</h1></div><a href="${pageContext.request.contextPath}/admin/home">Trang chủ</a></header>
+<header><div><p class="eyebrow">Quản trị · Nguyễn Đức Học · 24162039</p><h1>Quản lý danh mục</h1></div><a href="${pageContext.request.contextPath}/dashboard">Dashboard</a></header>
 <c:if test="${not empty param.saved}"><p class="success" role="status">Thao tác danh mục thành công.</p></c:if>
 <div class="toolbar"><form class="search" method="get" action="${pageContext.request.contextPath}/admin/category/list"><label for="q">Tìm danh mục</label><input id="q" name="q" value="<c:out value='${param.q}'/>" placeholder="Nhập tên danh mục"><button>Tìm kiếm</button><a href="${pageContext.request.contextPath}/admin/category/list">Tất cả</a></form><a class="button" href="${pageContext.request.contextPath}/admin/category/add">Thêm danh mục</a></div>
 <div class="table-wrap"><table><thead><tr><th>STT</th><th>Mã</th><th>Ảnh đại diện</th><th>Tên danh mục</th><th>Thao tác</th></tr></thead><tbody>

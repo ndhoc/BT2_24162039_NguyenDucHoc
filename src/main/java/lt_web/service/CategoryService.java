@@ -11,4 +11,5 @@ public interface CategoryService {
     Category get(String name);
     List<Category> getAll();
     List<Category> search(String keyword);
+    long count();
 }

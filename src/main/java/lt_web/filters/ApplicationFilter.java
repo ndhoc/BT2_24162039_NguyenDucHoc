@@ -37,6 +37,10 @@ public class ApplicationFilter implements Filter {
             if (path.startsWith("/manager/") && (account == null || account.getRoleid() != 2)) {
                 resp.sendError(403); return;
             }
+            if (path.equals("/dashboard")) {
+                if (account == null) { resp.sendRedirect(req.getContextPath() + "/login"); return; }
+                if (account.getRoleid() != 1 && account.getRoleid() != 2) { resp.sendError(403); return; }
+            }
             if ("POST".equals(req.getMethod()) && !session.getAttribute("csrf").equals(req.getParameter("csrf"))) {
                 resp.sendError(403, "Phiên làm việc không hợp lệ. Vui lòng tải lại biểu mẫu."); return;
             }
