@@ -8,7 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import lt_web.model.User;
+import lt_web.entity.User;
 
 @WebServlet("/home")
 public class HomeServlet extends HttpServlet {

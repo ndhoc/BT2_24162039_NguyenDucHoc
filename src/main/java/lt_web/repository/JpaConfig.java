@@ -1,4 +1,4 @@
-package lt_web.utils;
+package lt_web.repository;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -7,19 +7,18 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.EntityTransaction;
 import jakarta.persistence.Persistence;
-import lt_web.dao.DataAccessException;
 
-/** Shared JPA bootstrap: one EntityManagerFactory per web application. */
-public final class JpaUtil {
+/** Cấu hình JPA dùng chung: một EntityManagerFactory cho cả ứng dụng web. */
+public final class JpaConfig {
     private static final String UNIT = "jpa-hibernate-mysql";
     private static volatile EntityManagerFactory factory;
 
-    private JpaUtil() { }
+    private JpaConfig() { }
 
-    private static EntityManagerFactory factory() {
+    public static EntityManagerFactory getEntityManagerFactory() {
         EntityManagerFactory current = factory;
         if (current == null || !current.isOpen()) {
-            synchronized (JpaUtil.class) {
+            synchronized (JpaConfig.class) {
                 current = factory;
                 if (current == null || !current.isOpen()) {
                     try {
@@ -34,8 +33,12 @@ public final class JpaUtil {
         return current;
     }
 
+    public static EntityManager createEntityManager() {
+        return getEntityManagerFactory().createEntityManager();
+    }
+
     public static <T> T read(Function<EntityManager, T> work) {
-        try (EntityManager em = factory().createEntityManager()) {
+        try (EntityManager em = createEntityManager()) {
             return work.apply(em);
         } catch (DataAccessException | IllegalArgumentException e) {
             throw e;
@@ -45,7 +48,7 @@ public final class JpaUtil {
     }
 
     public static void write(Consumer<EntityManager> work) {
-        EntityManager em = factory().createEntityManager();
+        EntityManager em = createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();

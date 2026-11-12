@@ -1,4 +1,4 @@
-package lt_web.model;
+package lt_web.entity;
 
 import java.time.Instant;
 

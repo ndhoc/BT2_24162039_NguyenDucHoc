@@ -1,10 +1,10 @@
-package lt_web.dao;
+package lt_web.repository;
 
 import java.time.Instant;
 
-import lt_web.model.User;
+import lt_web.entity.User;
 
-public interface UserDao {
+public interface IUserRepository {
     User get(String username);
     void insert(User user);
     boolean checkExistUsername(String username);

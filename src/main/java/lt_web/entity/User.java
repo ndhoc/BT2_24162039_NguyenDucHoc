@@ -1,4 +1,4 @@
-package lt_web.model;
+package lt_web.entity;
 
 import java.io.Serializable;
 import java.time.LocalDate;

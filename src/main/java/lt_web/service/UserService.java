@@ -1,6 +1,6 @@
 package lt_web.service;
 
-import lt_web.model.User;
+import lt_web.entity.User;
 
 public interface UserService {
     User login(String username, String password);

@@ -1,11 +1,11 @@
-package lt_web.dao;
+package lt_web.repository;
 
 import java.math.BigDecimal;
 import java.util.List;
 
-import lt_web.model.Product;
+import lt_web.entity.Product;
 
-public interface ProductDao {
+public interface IProductRepository {
     List<Product> latest(int limit);
     List<Product> search(Integer categoryId, String keyword);
     long count();

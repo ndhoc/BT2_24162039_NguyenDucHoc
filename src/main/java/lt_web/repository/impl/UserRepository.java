@@ -1,18 +1,17 @@
-package lt_web.dao.impl;
+package lt_web.repository.impl;
 
 import java.time.Instant;
 
-import lt_web.dao.DataAccessException;
-import lt_web.dao.UserDao;
-import lt_web.model.RememberToken;
-import lt_web.model.User;
-import lt_web.utils.JpaUtil;
+import lt_web.entity.RememberToken;
+import lt_web.entity.User;
+import lt_web.repository.IUserRepository;
+import lt_web.repository.JpaConfig;
 
-public class UserDaoImpl implements UserDao {
+public class UserRepository implements IUserRepository {
 
     @Override
     public User get(String username) {
-        return JpaUtil.read(em -> em.createQuery(
+        return JpaConfig.read(em -> em.createQuery(
                         "select u from AppUser u where u.username = :username", User.class)
                 .setParameter("username", username)
                 .getResultStream().findFirst().orElse(null));
@@ -20,11 +19,11 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void insert(User user) {
-        JpaUtil.write(em -> em.persist(user));
+        JpaConfig.write(em -> em.persist(user));
     }
 
     private boolean exists(String jpql, String value) {
-        return JpaUtil.read(em -> em.createQuery(jpql, Long.class)
+        return JpaConfig.read(em -> em.createQuery(jpql, Long.class)
                 .setParameter("value", value)
                 .getSingleResult() > 0);
     }
@@ -46,12 +45,12 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void saveRememberToken(int userId, String tokenHash, Instant expires) {
-        JpaUtil.write(em -> em.persist(new RememberToken(tokenHash, em.getReference(User.class, userId), expires)));
+        JpaConfig.write(em -> em.persist(new RememberToken(tokenHash, em.getReference(User.class, userId), expires)));
     }
 
     @Override
     public User findByRememberToken(String tokenHash) {
-        return JpaUtil.read(em -> em.createQuery(
+        return JpaConfig.read(em -> em.createQuery(
                         "select t.user from RememberToken t where t.tokenHash = :hash and t.expiresAt > :now", User.class)
                 .setParameter("hash", tokenHash)
                 .setParameter("now", Instant.now())
@@ -60,13 +59,13 @@ public class UserDaoImpl implements UserDao {
 
     @Override
     public void deleteRememberToken(String tokenHash) {
-        JpaUtil.write(em -> em.createQuery("delete from RememberToken t where t.tokenHash = :hash")
+        JpaConfig.write(em -> em.createQuery("delete from RememberToken t where t.tokenHash = :hash")
                 .setParameter("hash", tokenHash)
                 .executeUpdate());
     }
 
     @Override
     public long count() {
-        return JpaUtil.read(em -> em.createQuery("select count(u) from AppUser u", Long.class).getSingleResult());
+        return JpaConfig.read(em -> em.createQuery("select count(u) from AppUser u", Long.class).getSingleResult());
     }
 }

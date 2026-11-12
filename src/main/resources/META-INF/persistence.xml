@@ -19,10 +19,10 @@
 
     <persistence-unit name="jpa-hibernate-mysql">
         <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
-        <class>lt_web.model.User</class>
-        <class>lt_web.model.Category</class>
-        <class>lt_web.model.Product</class>
-        <class>lt_web.model.RememberToken</class>
+        <class>lt_web.entity.User</class>
+        <class>lt_web.entity.Category</class>
+        <class>lt_web.entity.Product</class>
+        <class>lt_web.entity.RememberToken</class>
         <properties>
             <property name="jakarta.persistence.jdbc.url"
                       value="jdbc:sqlserver://localhost:1433;encrypt=true;trustServerCertificate=true;databaseName=MVC_24162039" />

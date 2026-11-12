@@ -5,8 +5,8 @@ import java.util.UUID;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.*;
-import lt_web.dao.DataAccessException;
-import lt_web.model.User;
+import lt_web.entity.User;
+import lt_web.repository.DataAccessException;
 import lt_web.utils.AuthCookies;
 
 @WebFilter("/*")

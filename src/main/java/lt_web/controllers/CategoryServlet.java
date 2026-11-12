@@ -4,7 +4,7 @@ import java.io.IOException;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.*;
 import jakarta.servlet.http.*;
-import lt_web.model.Category;
+import lt_web.entity.Category;
 import lt_web.service.CategoryService;
 import lt_web.service.impl.CategoryServiceImpl;
 import lt_web.utils.ImageStorage;

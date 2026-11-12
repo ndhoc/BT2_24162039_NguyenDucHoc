@@ -1,7 +1,7 @@
 package lt_web.service;
 
 import java.util.List;
-import lt_web.model.Category;
+import lt_web.entity.Category;
 
 public interface CategoryService {
     void insert(Category category);

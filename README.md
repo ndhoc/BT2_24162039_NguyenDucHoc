@@ -34,7 +34,7 @@ File `src/main/resources/META-INF/persistence.xml`:
 - `hibernate.hbm2ddl.auto=update`: Hibernate tự tạo/cập nhật bảng khi khởi động lần đầu.
 - `hibernate.show_sql`/`hibernate.format_sql`: in câu lệnh SQL ra log Tomcat để quan sát.
 
-`JpaUtil` tạo một `EntityManagerFactory` dùng chung, mở `EntityManager` cho mỗi thao tác và quản lý transaction (`read`/`write`). `JpaLifecycleListener` đóng factory khi ứng dụng dừng.
+`JpaConfig` tạo một `EntityManagerFactory` dùng chung, mở `EntityManager` cho mỗi thao tác và quản lý transaction (`read`/`write`). `JpaLifecycleListener` đóng factory khi ứng dụng dừng.
 
 ## Cơ sở dữ liệu và ảnh sản phẩm
 
@@ -81,12 +81,12 @@ Copy `target/BT2_24162039_NguyenDucHoc.war` vào `TOMCAT_HOME/webapps`, rồi kh
 src/main/java/lt_web/
   controllers/       Servlet: Index, Product, Dashboard, Login, Register, Category, ...
   filters/           UTF-8, xác thực, phân quyền, CSRF
-  model/             Entity JPA: User, Category, Product, RememberToken
+  entity/            Entity JPA: User, Category, Product, RememberToken
   service/           Interface nghiệp vụ
   service/impl/      Validation và xử lý nghiệp vụ
-  dao/               Interface truy cập dữ liệu
-  dao/impl/          DAO dùng EntityManager (JPQL)
-  utils/             JpaUtil, Cookie, hash mật khẩu, lưu ảnh
+  repository/        Interface repository + JpaConfig/DataAccessException
+  repository/impl/   Repository dùng EntityManager (JPQL)
+  utils/             Cookie, hash mật khẩu, lưu ảnh
 src/main/resources/META-INF/persistence.xml
 src/main/webapp/views/          index.jsp, products.jsp, dashboard.jsp, login/register, admin/
 src/main/webapp/images/products/ Ảnh sản phẩm mẫu

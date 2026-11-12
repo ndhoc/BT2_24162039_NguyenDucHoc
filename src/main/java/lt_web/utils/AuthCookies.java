@@ -5,15 +5,15 @@ import java.security.*;
 import java.time.Instant;
 import java.util.*;
 import jakarta.servlet.http.*;
-import lt_web.dao.UserDao;
-import lt_web.dao.impl.UserDaoImpl;
-import lt_web.model.User;
+import lt_web.entity.User;
+import lt_web.repository.IUserRepository;
+import lt_web.repository.impl.UserRepository;
 
 /** The browser holds a random token, never a username or password. */
 public final class AuthCookies {
     public static final String NAME = "remember_token";
     public static final int MAX_AGE = 30 * 60;
-    private static final UserDao USERS = new UserDaoImpl();
+    private static final IUserRepository USERS = new UserRepository();
     private AuthCookies() { }
     private static String token(HttpServletRequest req) {
         if (req.getCookies() != null) for (Cookie cookie : req.getCookies())

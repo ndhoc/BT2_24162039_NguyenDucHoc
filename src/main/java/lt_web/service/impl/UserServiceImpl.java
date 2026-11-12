@@ -2,25 +2,30 @@ package lt_web.service.impl;
 
 import java.sql.SQLException;
 import java.time.LocalDate;
-import lt_web.dao.*;
-import lt_web.dao.impl.UserDaoImpl;
-import lt_web.model.User;
+
+import lt_web.entity.User;
+import lt_web.repository.DataAccessException;
+import lt_web.repository.IUserRepository;
+import lt_web.repository.impl.UserRepository;
 import lt_web.service.UserService;
 import lt_web.utils.PasswordUtils;
 
 public class UserServiceImpl implements UserService {
-    private final UserDao dao = new UserDaoImpl();
-    @Override public User get(String username) { return dao.get(username); }
+    private final IUserRepository repository = new UserRepository();
+
+    @Override public User get(String username) { return repository.get(username); }
+
     @Override public User login(String username, String password) {
         if (username == null || username.isBlank() || password == null || password.isEmpty())
             throw new IllegalArgumentException("Tài khoản và mật khẩu không được để trống.");
-        User user = dao.get(username.trim());
+        User user = repository.get(username.trim());
         return user != null && PasswordUtils.verify(password, user.getPassword()) ? user : null;
     }
-    @Override public boolean checkExistUsername(String v) { return dao.checkExistUsername(v); }
-    @Override public boolean checkExistEmail(String v) { return dao.checkExistEmail(v); }
-    @Override public boolean checkExistPhone(String v) { return dao.checkExistPhone(v); }
-    @Override public long count() { return dao.count(); }
+
+    @Override public boolean checkExistUsername(String v) { return repository.checkExistUsername(v); }
+    @Override public boolean checkExistEmail(String v) { return repository.checkExistEmail(v); }
+    @Override public boolean checkExistPhone(String v) { return repository.checkExistPhone(v); }
+    @Override public long count() { return repository.count(); }
 
     @Override public void register(String username, String password, String confirm, String email, String fullname, String phone) {
         username = username == null ? "" : username.trim();
@@ -42,7 +47,7 @@ public class UserServiceImpl implements UserService {
         User user = new User(username, fullname);
         user.setEmail(email); user.setPhone(phone); user.setPassword(PasswordUtils.hash(password));
         user.setRoleid(5); user.setCreatedDate(LocalDate.now());
-        try { dao.insert(user); }
+        try { repository.insert(user); }
         catch (DataAccessException e) {
             if (isDuplicate(e)) throw new IllegalArgumentException("Tài khoản, email hoặc số điện thoại đã tồn tại.");
             throw e;

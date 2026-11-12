@@ -1,9 +1,10 @@
-package lt_web.dao;
+package lt_web.repository;
 
 import java.util.List;
-import lt_web.model.Category;
 
-public interface CategoryDao {
+import lt_web.entity.Category;
+
+public interface ICategoryRepository {
     void insert(Category category);
     void edit(Category category);
     void delete(int id);

@@ -7,7 +7,7 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lt_web.model.User;
+import lt_web.entity.User;
 import lt_web.service.AuthService;
 import lt_web.utils.AuthCookies;
 

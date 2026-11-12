@@ -3,7 +3,7 @@ package lt_web.service;
 import java.math.BigDecimal;
 import java.util.List;
 
-import lt_web.model.Product;
+import lt_web.entity.Product;
 
 public interface ProductService {
     List<Product> latest(int limit);
