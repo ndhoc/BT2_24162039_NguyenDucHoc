@@ -11,3 +11,6 @@
 
 # Local-only scripts (Tomcat/JDK paths, smoke tests)
 /scripts/
+
+# SMTP credentials: copy mail.properties.example to mail.properties and fill in
+src/main/resources/mail.properties

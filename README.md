@@ -28,9 +28,11 @@
 
 ## Cấu hình gửi OTP qua email
 
-`src/main/resources/mail.properties` khai báo SMTP. Chưa điền `mail.smtp.host` thì ứng dụng chạy **chế độ DEV**: mã OTP được in ra log Tomcat và ghi vào `<catalina.base>/logs/otp-dev.log` (đường dẫn này dùng trong `scripts/otp_test.py`). Có thể ghi đè bằng biến môi trường `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM`, `MAIL_STARTTLS`, `MAIL_AUTH`.
+`src/main/resources/mail.properties` chứa thông tin SMTP thật và **đã nằm trong `.gitignore`** nên không bị commit. Sao chép file mẫu rồi điền thông tin:
 
-Ví dụ cấu hình Gmail (dùng App Password):
+```powershell
+Copy-Item src/main/resources/mail.properties.example src/main/resources/mail.properties
+```
 
 ```properties
 mail.smtp.host=smtp.gmail.com
@@ -38,7 +40,11 @@ mail.smtp.port=587
 mail.smtp.username=your-account@gmail.com
 mail.smtp.password=your-app-password
 mail.smtp.from=your-account@gmail.com
+mail.smtp.starttls=true
+mail.smtp.auth=true
 ```
+
+Có thể ghi đè bằng biến môi trường `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM`, `MAIL_STARTTLS`, `MAIL_AUTH`. Chưa cấu hình `mail.smtp.host` thì ứng dụng chạy **chế độ DEV**: mã OTP ghi vào `<catalina.base>/logs/otp-dev.log`.
 
 ## Cấu hình JPA
 
@@ -106,7 +112,7 @@ src/main/java/lt_web/
   utils/             Cookie, hash mật khẩu, OTP, gửi mail, lưu ảnh
 src/main/resources/
   META-INF/persistence.xml   Cấu hình JPA
-  mail.properties            Cấu hình SMTP gửi OTP
+  mail.properties.example    Mẫu cấu hình SMTP (mail.properties thật bị gitignore)
 src/main/webapp/views/          index.jsp, products.jsp, dashboard.jsp,
                                 login/register/activate, forgot-password/reset-password, admin/
 src/main/webapp/js/              otp-input.js: ô nhập OTP 6 chữ số

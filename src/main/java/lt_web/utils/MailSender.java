@@ -17,6 +17,8 @@ import jakarta.mail.Session;
 import jakarta.mail.Transport;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
+import jakarta.mail.internet.MimeMultipart;
+import jakarta.mail.internet.MimeBodyPart;
 
 /**
  * Gửi email OTP qua SMTP. Khi chưa cấu hình mail.smtp.host, OTP được ghi vào
@@ -90,8 +92,14 @@ public final class MailSender {
             message.setFrom(new InternetAddress(from, "Shop 24162039", "UTF-8"));
             message.setRecipients(Message.RecipientType.TO, InternetAddress.parse(to, false));
             message.setSubject(subject, "UTF-8");
-            message.setText(text(fullName, code, action), "UTF-8");
-            message.setContent(html(fullName, code, action), "text/html; charset=UTF-8");
+            MimeMultipart body = new MimeMultipart("alternative");
+            MimeBodyPart plain = new MimeBodyPart();
+            plain.setText(text(fullName, code, action), "UTF-8");
+            MimeBodyPart rich = new MimeBodyPart();
+            rich.setContent(html(fullName, code, action), "text/html; charset=UTF-8");
+            body.addBodyPart(plain);
+            body.addBodyPart(rich);
+            message.setContent(body);
             Transport.send(message);
         } catch (MessagingException | IOException e) {
             throw new IllegalStateException("Không gửi được email OTP. Vui lòng thử lại.", e);

@@ -1,0 +1,17 @@
+# Sao chép file này thành src/main/resources/mail.properties rồi điền thông tin
+# SMTP thật. mail.properties đã nằm trong .gitignore nên không bị commit.
+#
+# Để trống mail.smtp.host thì ứng dụng chạy chế độ DEV: mã OTP được ghi vào
+# <catalina.base>/logs/otp-dev.log thay vì gửi email thật.
+#
+# Có thể ghi đè bằng biến môi trường: MAIL_HOST, MAIL_PORT, MAIL_USERNAME,
+# MAIL_PASSWORD, MAIL_FROM, MAIL_STARTTLS, MAIL_AUTH.
+
+mail.smtp.host=
+mail.smtp.port=587
+mail.smtp.username=
+mail.smtp.password=
+mail.smtp.from=no-reply@shop24162039.local
+mail.smtp.starttls=true
+mail.smtp.auth=true
+mail.smtp.timeout=10000
