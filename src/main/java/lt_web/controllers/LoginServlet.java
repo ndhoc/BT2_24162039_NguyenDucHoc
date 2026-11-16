@@ -36,14 +36,16 @@ public class LoginServlet extends HttpServlet {
 
         try {
             User user = authService.authenticate(username, password);
-            if (user == null) throw new IllegalArgumentException("Tên đăng nhập hoặc mật khẩu không đúng.");
             boolean remember = "on".equals(request.getParameter("remember"));
             if (remember) AuthCookies.remember(request, response, user);
             else AuthCookies.clear(request, response);
             AuthCookies.signIn(request, user, remember ? "Session + Cookie ghi nhớ" : "Session");
             response.sendRedirect(request.getContextPath() + "/waiting");
         } catch (IllegalStateException e) {
+            User pending = authService.findPending(username);
+            if (pending != null) request.getSession().setAttribute("pendingActivation", pending.getId());
             request.setAttribute("alert", e.getMessage());
+            request.setAttribute("pendingUsername", pending == null ? null : pending.getUsername());
             request.getRequestDispatcher("/views/login.jsp").forward(request, response);
         } catch (IllegalArgumentException e) {
             request.setAttribute("alert", e.getMessage());
