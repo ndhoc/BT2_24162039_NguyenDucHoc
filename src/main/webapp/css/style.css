@@ -70,3 +70,16 @@ a:focus-visible, button:focus-visible { outline: 2px solid #2563eb; outline-offs
 .panel table { margin: 0; }
 .nowrap { white-space: nowrap; }
 @media (max-width: 760px) { .hero { grid-template-columns: 1fr; padding: 30px; } .hero-art { display: none; } .site-header { position: static; } }
+
+/* OTP input: 6 ô riêng, dùng chung cho kích hoạt và đặt lại mật khẩu */
+.otp-field { margin: 4px 0 2px; }
+.otp-boxes { display: flex; gap: 10px; justify-content: space-between; }
+.otp-box { width: 100%; min-width: 0; aspect-ratio: 1 / 1.1; padding: 0; border: 1.5px solid #cbd5e1; border-radius: 12px; background: #f8fafc; text-align: center; font-size: 1.5rem; font-weight: 700; font-variant-numeric: tabular-nums; color: #0f172a; transition: border-color .15s, box-shadow .15s, background .15s, transform .1s; }
+.otp-box.filled { background: #fff; border-color: #93c5fd; }
+.otp-box:focus { outline: none; border-color: #1d4ed8; background: #fff; box-shadow: 0 0 0 4px #1d4ed826; transform: translateY(-1px); }
+.otp-hint { margin: 10px 0 0; font-size: .82rem; color: #64748b; }
+.otp-step { display: inline-flex; align-items: center; gap: 8px; padding: 5px 12px; border-radius: 999px; background: #eff6ff; color: #1d4ed8; font-size: .78rem; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; }
+.otp-step.done { background: #ecfdf5; color: #047857; }
+.otp-recipient { font-weight: 600; color: #0f172a; overflow-wrap: anywhere; }
+.auth-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 4px 0 0; }
+@media (max-width: 420px) { .otp-boxes { gap: 6px; } .otp-box { font-size: 1.2rem; border-radius: 10px; } }

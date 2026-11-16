@@ -12,6 +12,7 @@ import lt_web.repository.impl.UserRepository;
 import lt_web.service.AccountVerificationService;
 import lt_web.utils.MailSender;
 import lt_web.utils.OtpCodes;
+import lt_web.utils.PasswordUtils;
 
 public class AccountVerificationServiceImpl implements AccountVerificationService {
     private static final Duration LIFETIME = Duration.ofMinutes(10);
@@ -31,6 +32,32 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
         user.setActive(Boolean.TRUE);
         users.update(user);
         tokens.delete(userId, OtpToken.PURPOSE_ACTIVATION);
+    }
+
+    @Override
+    public void sendPasswordResetOtp(User user) {
+        issue(user, OtpToken.PURPOSE_RESET);
+    }
+
+    @Override
+    public void verifyPasswordResetCode(int userId, String code) {
+        verify(userId, OtpToken.PURPOSE_RESET, code);
+    }
+
+    @Override
+    public void resetPassword(int userId, String password, String confirm) {
+        if (password == null || password.length() < 6 || password.length() > 128)
+            throw new IllegalArgumentException("Mật khẩu phải có 6–128 ký tự.");
+        if (!password.equals(confirm)) throw new IllegalArgumentException("Mật khẩu xác nhận không khớp.");
+        OtpToken token = tokens.find(userId, OtpToken.PURPOSE_RESET);
+        if (token == null || token.getExpiresAt().isBefore(Instant.now()))
+            throw new IllegalArgumentException(OTP_EXPIRED);
+        User user = users.getById(userId);
+        if (user == null) throw new IllegalArgumentException("Tài khoản không tồn tại.");
+        user.setPassword(PasswordUtils.hash(password));
+        user.setActive(Boolean.TRUE);
+        users.update(user);
+        tokens.delete(userId, OtpToken.PURPOSE_RESET);
     }
 
     private void issue(User user, String purpose) {

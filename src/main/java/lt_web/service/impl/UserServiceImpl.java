@@ -15,12 +15,16 @@ public class UserServiceImpl implements UserService {
 
     @Override public User get(String username) { return repository.get(username); }
     @Override public User getById(int id) { return repository.getById(id); }
+    @Override public User getByEmail(String email) {
+        return email == null || email.isBlank() ? null : repository.getByEmail(email.trim());
+    }
 
     @Override public User login(String username, String password) {
         if (username == null || username.isBlank() || password == null || password.isEmpty())
             throw new IllegalArgumentException("Tài khoản và mật khẩu không được để trống.");
         User user = repository.get(username.trim());
-        if (user == null || !PasswordUtils.verify(password, user.getPassword())) return null;
+        if (user == null || !PasswordUtils.verify(password, user.getPassword()))
+            throw new IllegalArgumentException("Tên đăng nhập hoặc mật khẩu không đúng.");
         if (!user.isActive())
             throw new IllegalStateException("Tài khoản chưa được kích hoạt. Vui lòng nhập mã OTP gửi tới email của bạn.");
         return user;

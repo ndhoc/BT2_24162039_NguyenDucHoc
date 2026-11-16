@@ -7,6 +7,7 @@ import lt_web.entity.User;
 public interface IUserRepository {
     User get(String username);
     User getById(int id);
+    User getByEmail(String email);
     void insert(User user);
     void update(User user);
     boolean checkExistUsername(String username);

@@ -10,5 +10,5 @@
 <label for="phone">Số điện thoại</label><input id="phone" name="phone" type="tel" maxlength="15" value="<c:out value='${param.phone}'/>" autocomplete="tel" required>
 <label for="password">Mật khẩu</label><input id="password" type="password" name="password" minlength="6" maxlength="128" autocomplete="new-password" required>
 <label for="confirm">Xác nhận mật khẩu</label><input id="confirm" type="password" name="confirm" minlength="6" maxlength="128" autocomplete="new-password" required>
-<button type="submit">Đăng ký</button></form><p><a href="${pageContext.request.contextPath}/login">Quay lại đăng nhập</a></p>
+<button type="submit">Đăng ký</button></form><p class="auth-footer"><a href="${pageContext.request.contextPath}/login">Quay lại đăng nhập</a> <a href="${pageContext.request.contextPath}/forgot-password">Quên mật khẩu?</a></p>
 </main></body></html>

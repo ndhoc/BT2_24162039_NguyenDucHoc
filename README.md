@@ -15,8 +15,8 @@
   - Login có tùy chọn **Ghi nhớ đăng nhập bằng Cookie**: token ngẫu nhiên, HttpOnly, SameSite=Lax, sống 30 phút; bảng `RememberToken` chỉ lưu SHA-256 của token.
   - Register kiểm tra dữ liệu, xác nhận mật khẩu và trùng username/email/phone; mật khẩu lưu bằng PBKDF2-HMAC-SHA256 có salt.
 - **Kích hoạt tài khoản bằng OTP `/activate`**: sau khi đăng ký, tài khoản ở trạng thái `is_active = 0`; mã OTP 6 chữ số được gửi tới email, có hiệu lực 10 phút, dùng một lần, tối đa 5 lần nhập sai. Chỉ bản băm SHA-256 của mã lưu trong bảng `OtpToken`. Tài khoản chưa kích hoạt không đăng nhập được.
-- **Quản lý danh mục** (chỉ admin): danh sách, tìm kiếm, thêm/sửa/xóa, tải và hiển thị ảnh PNG/JPEG.
-- **Logout**: hủy Session, thu hồi token trong `RememberToken`, xóa Cookie ghi nhớ và `JSESSIONID`.
+- **Quên mật khẩu `/forgot-password` → `/reset-password`**: nhập email đã đăng ký để nhận mã xác nhận OTP, sau đó nhập mã kèm mật khẩu mới (PBKDF2). Có nút gửi lại mã.
+- **Đăng xuất `/logout`**: hủy Session, thu hồi token trong `RememberToken`, xóa Cookie ghi nhớ và `JSESSIONID`.
 - Filter xác thực/phân quyền, CSRF cho POST, UTF-8, JSP xuất dữ liệu bằng `c:out`.
 
 ## Công nghệ
@@ -28,7 +28,7 @@
 
 ## Cấu hình gửi OTP qua email
 
-`src/main/resources/mail.properties` khai báo SMTP. Chưa điền `mail.smtp.host` thì ứng dụng chạy **chế độ DEV**: mã OTP được in ra log Tomcat và ghi vào `<catalina.base>/logs/otp-dev.log`. Có thể ghi đè bằng biến môi trường `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM`, `MAIL_STARTTLS`, `MAIL_AUTH`.
+`src/main/resources/mail.properties` khai báo SMTP. Chưa điền `mail.smtp.host` thì ứng dụng chạy **chế độ DEV**: mã OTP được in ra log Tomcat và ghi vào `<catalina.base>/logs/otp-dev.log` (đường dẫn này dùng trong `scripts/otp_test.py`). Có thể ghi đè bằng biến môi trường `MAIL_HOST`, `MAIL_PORT`, `MAIL_USERNAME`, `MAIL_PASSWORD`, `MAIL_FROM`, `MAIL_STARTTLS`, `MAIL_AUTH`.
 
 Ví dụ cấu hình Gmail (dùng App Password):
 
@@ -96,7 +96,7 @@ Copy `target/BT2_24162039_NguyenDucHoc.war` vào `TOMCAT_HOME/webapps`, rồi kh
 ```text
 src/main/java/lt_web/
   controllers/       Servlet: Index, Product, Dashboard, Login, Register, Activate,
-                     Logout, Category, ...
+                     ForgotPassword, ResetPassword, Logout, Category, ...
   filters/           UTF-8, xác thực, phân quyền, CSRF
   entity/            Entity JPA: User, Category, Product, RememberToken, OtpToken
   service/           Interface nghiệp vụ (UserService, AccountVerificationService, ...)
@@ -108,7 +108,8 @@ src/main/resources/
   META-INF/persistence.xml   Cấu hình JPA
   mail.properties            Cấu hình SMTP gửi OTP
 src/main/webapp/views/          index.jsp, products.jsp, dashboard.jsp,
-                                login/register/activate, admin/
+                                login/register/activate, forgot-password/reset-password, admin/
+src/main/webapp/js/              otp-input.js: ô nhập OTP 6 chữ số
 src/main/webapp/images/products/ Ảnh sản phẩm mẫu
 database/                       Schema và dữ liệu mẫu
 ```
@@ -120,6 +121,7 @@ database/                       Schema và dữ liệu mẫu
 3. Đăng nhập `manager / 123456` → vào `/dashboard` nhưng không thấy nút quản lý danh mục.
 4. Đăng nhập `user / 123456` → vào `/products`; truy cập `/dashboard` bị chặn 403.
 5. Đăng ký tài khoản mới → nhận OTP trong `<catalina.base>/logs/otp-dev.log` (hoặc email nếu đã cấu hình SMTP) → nhập OTP ở `/activate` → đăng nhập.
-6. Thử đăng nhập khi chưa kích hoạt để thấy thông báo chặn.
+6. Thử đăng nhập khi chưa kích hoạt để thấy thông báo chặn và nút **Nhập mã OTP để kích hoạt**.
 7. Thử nhập sai OTP 5 lần để thấy tài khoản bị khóa mã; bấm **Gửi lại mã OTP** để lấy mã mới.
-8. Đăng xuất để kết thúc Session và xóa Cookie ghi nhớ.
+8. Vào `/forgot-password`, nhập email đã đăng ký → nhận OTP → xác nhận mã ở `/reset-password` → nhập mật khẩu mới → đăng nhập bằng mật khẩu mới.
+9. Đăng xuất để kết thúc Session và xóa Cookie ghi nhớ.

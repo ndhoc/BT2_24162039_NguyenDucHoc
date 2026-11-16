@@ -23,6 +23,14 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
+    public User getByEmail(String email) {
+        return JpaConfig.read(em -> em.createQuery(
+                        "select u from AppUser u where u.email = :email", User.class)
+                .setParameter("email", email)
+                .getResultStream().findFirst().orElse(null));
+    }
+
+    @Override
     public void insert(User user) {
         JpaConfig.write(em -> em.persist(user));
     }
