@@ -1,7 +1,7 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Đăng ký | 24162039</title><link rel="stylesheet" href="${pageContext.request.contextPath}/css/style.css?v=20261110-2"></head><body><main class="card auth">
-<p class="eyebrow">24162039 · Nguyễn Đức Học</p><h1>Tạo tài khoản</h1><p>Nhập thông tin để đăng ký tài khoản thành viên.</p>
+<p class="eyebrow">24162039 · Nguyễn Đức Học</p><h1>Tạo tài khoản</h1><p>Nhập thông tin để đăng ký. Sau khi đăng ký, nhập mã OTP gửi tới email để kích hoạt tài khoản trước khi đăng nhập.</p>
 <c:if test="${not empty alert}"><p class="alert" role="alert"><c:out value="${alert}"/></p></c:if>
 <form action="${pageContext.request.contextPath}/register" method="post"><input type="hidden" name="csrf" value="${sessionScope.csrf}">
 <label for="fullname">Họ và tên</label><input id="fullname" name="fullname" maxlength="100" value="<c:out value='${param.fullname}'/>" autocomplete="name" required>

@@ -13,8 +13,12 @@ CREATE TABLE dbo.[User] (
     avatar NVARCHAR(255) NULL,
     roleid INT NOT NULL DEFAULT 5 CHECK (roleid IN (1,2,5)),
     phone VARCHAR(15) NOT NULL UNIQUE,
-    createddate DATE NOT NULL DEFAULT CAST(GETDATE() AS DATE)
+    createddate DATE NOT NULL DEFAULT CAST(GETDATE() AS DATE),
+    is_active BIT NOT NULL DEFAULT 1
 );
+GO
+IF COL_LENGTH(N'dbo.[User]', N'is_active') IS NULL
+ALTER TABLE dbo.[User] ADD is_active BIT NOT NULL CONSTRAINT DF_User_is_active DEFAULT 1;
 GO
 IF OBJECT_ID(N'dbo.Category', N'U') IS NULL
 CREATE TABLE dbo.Category (
@@ -38,6 +42,18 @@ CREATE TABLE dbo.RememberToken (
     token_hash CHAR(64) PRIMARY KEY,
     user_id INT NOT NULL REFERENCES dbo.[User](id) ON DELETE CASCADE,
     expires_at DATETIME2 NOT NULL
+);
+GO
+IF OBJECT_ID(N'dbo.OtpToken', N'U') IS NULL
+CREATE TABLE dbo.OtpToken (
+    id BIGINT IDENTITY(1,1) PRIMARY KEY,
+    user_id INT NOT NULL REFERENCES dbo.[User](id) ON DELETE CASCADE,
+    purpose VARCHAR(20) NOT NULL CHECK (purpose IN ('ACTIVATION','RESET')),
+    code_hash CHAR(64) NOT NULL,
+    expires_at DATETIME2 NOT NULL,
+    attempts INT NOT NULL DEFAULT 0,
+    created_at DATETIME2 NOT NULL DEFAULT SYSUTCDATETIME(),
+    CONSTRAINT UQ_OtpToken_user_purpose UNIQUE (user_id, purpose)
 );
 GO
 -- Demo accounts are seeded separately by seed.sql.

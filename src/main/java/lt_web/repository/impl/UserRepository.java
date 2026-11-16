@@ -18,8 +18,18 @@ public class UserRepository implements IUserRepository {
     }
 
     @Override
+    public User getById(int id) {
+        return JpaConfig.read(em -> em.find(User.class, id));
+    }
+
+    @Override
     public void insert(User user) {
         JpaConfig.write(em -> em.persist(user));
+    }
+
+    @Override
+    public void update(User user) {
+        JpaConfig.write(em -> em.merge(user));
     }
 
     private boolean exists(String jpql, String value) {

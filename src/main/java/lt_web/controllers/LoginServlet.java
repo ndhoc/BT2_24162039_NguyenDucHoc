@@ -42,6 +42,9 @@ public class LoginServlet extends HttpServlet {
             else AuthCookies.clear(request, response);
             AuthCookies.signIn(request, user, remember ? "Session + Cookie ghi nhớ" : "Session");
             response.sendRedirect(request.getContextPath() + "/waiting");
+        } catch (IllegalStateException e) {
+            request.setAttribute("alert", e.getMessage());
+            request.getRequestDispatcher("/views/login.jsp").forward(request, response);
         } catch (IllegalArgumentException e) {
             request.setAttribute("alert", e.getMessage());
             request.getRequestDispatcher("/views/login.jsp").forward(request, response);

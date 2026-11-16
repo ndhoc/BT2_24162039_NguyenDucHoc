@@ -43,6 +43,9 @@ public class User implements Serializable {
     @Column(name = "createddate", nullable = false)
     private LocalDate createdDate;
 
+    @Column(name = "is_active")
+    private Boolean active;
+
     public User() {
     }
 
@@ -81,4 +84,7 @@ public class User implements Serializable {
     public void setPhone(String phone) { this.phone = phone; }
     public LocalDate getCreatedDate() { return createdDate; }
     public void setCreatedDate(LocalDate createdDate) { this.createdDate = createdDate; }
+    public Boolean getActive() { return active; }
+    public void setActive(Boolean active) { this.active = active; }
+    public boolean isActive() { return !Boolean.FALSE.equals(active); }
 }

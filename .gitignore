@@ -8,4 +8,6 @@
 # Reference documents and generated verification artifacts
 *.pdf
 /TEST_RESULTS.md
+
+# Local-only scripts (Tomcat/JDK paths, smoke tests)
 /scripts/
