@@ -56,4 +56,63 @@ CREATE TABLE dbo.OtpToken (
     CONSTRAINT UQ_OtpToken_user_purpose UNIQUE (user_id, purpose)
 );
 GO
+IF OBJECT_ID(N'dbo.Videos', N'U') IS NULL
+CREATE TABLE dbo.Videos (
+    video_id INT IDENTITY(1,1) PRIMARY KEY,
+    title NVARCHAR(255) NOT NULL,
+    description NVARCHAR(1000) NULL,
+    file_name VARCHAR(255) NOT NULL,
+    user_id INT NOT NULL REFERENCES dbo.[User](id) ON DELETE CASCADE,
+    created_at DATETIMEOFFSET NOT NULL DEFAULT SYSUTCDATETIME()
+);
+GO
+
+-- Nâng cấp bảng do Hibernate hoặc phiên bản bài cũ đã tạo trước đó.
+-- NVARCHAR giữ đúng tiêu đề/mô tả tiếng Việt; DATETIMEOFFSET khớp ánh xạ Date của Hibernate.
+IF OBJECT_ID(N'dbo.Videos', N'U') IS NOT NULL
+BEGIN
+    UPDATE dbo.Videos SET created_at = SYSUTCDATETIME() WHERE created_at IS NULL;
+    ALTER TABLE dbo.Videos ALTER COLUMN title NVARCHAR(255) NOT NULL;
+    ALTER TABLE dbo.Videos ALTER COLUMN description NVARCHAR(1000) NULL;
+    ALTER TABLE dbo.Videos ALTER COLUMN file_name VARCHAR(255) NOT NULL;
+    ALTER TABLE dbo.Videos ALTER COLUMN created_at DATETIMEOFFSET NOT NULL;
+END
+GO
+
+IF NOT EXISTS (
+    SELECT 1
+    FROM sys.default_constraints dc
+    JOIN sys.columns c ON c.object_id = dc.parent_object_id AND c.column_id = dc.parent_column_id
+    WHERE dc.parent_object_id = OBJECT_ID(N'dbo.Videos') AND c.name = N'created_at'
+)
+ALTER TABLE dbo.Videos ADD CONSTRAINT DF_Videos_created_at DEFAULT SYSUTCDATETIME() FOR created_at;
+GO
+
+-- Chuẩn hóa khóa ngoại kể cả khi bảng đã được Hibernate tạo với NO ACTION.
+DECLARE @VideoUserFk SYSNAME;
+SELECT TOP (1) @VideoUserFk = fk.name
+FROM sys.foreign_keys fk
+JOIN sys.foreign_key_columns fkc ON fkc.constraint_object_id = fk.object_id
+JOIN sys.columns pc ON pc.object_id = fkc.parent_object_id AND pc.column_id = fkc.parent_column_id
+WHERE fk.parent_object_id = OBJECT_ID(N'dbo.Videos')
+  AND fk.referenced_object_id = OBJECT_ID(N'dbo.[User]')
+  AND pc.name = N'user_id';
+
+IF @VideoUserFk IS NOT NULL
+BEGIN
+    DECLARE @DropVideoUserFkSql NVARCHAR(1000);
+    SET @DropVideoUserFkSql = N'ALTER TABLE dbo.Videos DROP CONSTRAINT ' + QUOTENAME(@VideoUserFk);
+    EXEC sys.sp_executesql @DropVideoUserFkSql;
+END
+
+ALTER TABLE dbo.Videos WITH CHECK
+ADD CONSTRAINT FK_Videos_User FOREIGN KEY (user_id) REFERENCES dbo.[User](id) ON DELETE CASCADE;
+GO
+
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Videos_user_created' AND object_id = OBJECT_ID(N'dbo.Videos'))
+CREATE INDEX IX_Videos_user_created ON dbo.Videos(user_id, created_at DESC);
+GO
+IF NOT EXISTS (SELECT 1 FROM sys.indexes WHERE name = N'IX_Videos_created' AND object_id = OBJECT_ID(N'dbo.Videos'))
+CREATE INDEX IX_Videos_created ON dbo.Videos(created_at DESC, video_id DESC);
+GO
 -- Demo accounts are seeded separately by seed.sql.

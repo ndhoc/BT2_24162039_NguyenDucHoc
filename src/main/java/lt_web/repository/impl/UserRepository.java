@@ -1,6 +1,7 @@
 package lt_web.repository.impl;
 
 import java.time.Instant;
+import java.util.List;
 
 import lt_web.entity.RememberToken;
 import lt_web.entity.User;
@@ -28,6 +29,12 @@ public class UserRepository implements IUserRepository {
                         "select u from AppUser u where u.email = :email", User.class)
                 .setParameter("email", email)
                 .getResultStream().findFirst().orElse(null));
+    }
+
+    @Override
+    public List<User> all() {
+        return JpaConfig.read(em -> em.createQuery(
+                "select u from AppUser u order by u.id", User.class).getResultList());
     }
 
     @Override

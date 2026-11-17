@@ -24,6 +24,7 @@
         <class>lt_web.entity.Product</class>
         <class>lt_web.entity.RememberToken</class>
         <class>lt_web.entity.OtpToken</class>
+        <class>lt_web.entity.Video</class>
         <properties>
             <property name="jakarta.persistence.jdbc.url"
                       value="jdbc:sqlserver://localhost:1433;encrypt=true;trustServerCertificate=true;databaseName=MVC_24162039" />
@@ -33,8 +34,8 @@
             <property name="jakarta.persistence.jdbc.password" value="123456" />
             <property name="hibernate.show_sql" value="true" />
             <property name="hibernate.format_sql" value="true" />
-            <property name="hibernate.hbm2ddl.auto" value="update" />
-            <property name="hibernate.dialect" value="org.hibernate.dialect.SQLServerDialect" />
+            <!-- Cấu trúc được quản lý bằng database/schema.sql để migration có thể kiểm soát constraint. -->
+            <property name="hibernate.hbm2ddl.auto" value="none" />
         </properties>
     </persistence-unit>
 </persistence>

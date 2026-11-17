@@ -41,8 +41,18 @@ public class ApplicationFilter implements Filter {
                 if (account == null) { resp.sendRedirect(req.getContextPath() + "/login"); return; }
                 if (account.getRoleid() != 1 && account.getRoleid() != 2) { resp.sendError(403); return; }
             }
-            if ("POST".equals(req.getMethod()) && !session.getAttribute("csrf").equals(req.getParameter("csrf"))) {
-                resp.sendError(403, "Phiên làm việc không hợp lệ. Vui lòng tải lại biểu mẫu."); return;
+            if ("POST".equals(req.getMethod())) {
+                String csrf;
+                try {
+                    csrf = req.getParameter("csrf");
+                } catch (IllegalStateException e) {
+                    resp.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE,
+                            "Tệp tải lên vượt quá dung lượng cho phép.");
+                    return;
+                }
+                if (!session.getAttribute("csrf").equals(csrf)) {
+                    resp.sendError(403, "Phiên làm việc không hợp lệ. Vui lòng tải lại biểu mẫu."); return;
+                }
             }
             chain.doFilter(req, resp);
         } catch (DataAccessException e) {

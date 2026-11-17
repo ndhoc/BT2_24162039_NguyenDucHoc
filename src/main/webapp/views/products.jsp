@@ -4,10 +4,11 @@
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
 <!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Danh mục sản phẩm | Shop 24162039</title><link rel="stylesheet" href="${ctx}/css/style.css?v=20261112-1"></head><body>
 <header class="site-header">
-  <a class="brand" href="${ctx}/">Shop<span>24162039</span></a>
+  <a class="brand" href="${ctx}/home">Shop<span>24162039</span></a>
   <nav class="site-nav">
-    <a href="${ctx}/">Trang chủ</a>
+    <a href="${ctx}/home">Trang chủ</a>
     <a class="active" href="${ctx}/products">Sản phẩm</a>
+    <a href="${ctx}/video">Video</a>
     <c:choose>
       <c:when test="${not empty sessionScope.account}">
         <c:if test="${sessionScope.account.roleid == 1 or sessionScope.account.roleid == 2}"><a href="${ctx}/dashboard">Dashboard</a></c:if>

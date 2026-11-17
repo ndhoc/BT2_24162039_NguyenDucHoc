@@ -2,12 +2,13 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trang chủ | Shop 24162039</title><link rel="stylesheet" href="${ctx}/css/style.css?v=20261112-1"></head><body>
+<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Trang chủ | Shop 24162039</title><link rel="stylesheet" href="${ctx}/css/style.css?v=20261119-1"></head><body>
 <header class="site-header">
-  <a class="brand" href="${ctx}/">Shop<span>24162039</span></a>
+  <a class="brand" href="${ctx}/home">Shop<span>24162039</span></a>
   <nav class="site-nav">
-    <a class="active" href="${ctx}/">Trang chủ</a>
+    <a class="active" href="${ctx}/home">Trang chủ</a>
     <a href="${ctx}/products">Sản phẩm</a>
+    <a href="${ctx}/video">Video</a>
     <c:choose>
       <c:when test="${not empty sessionScope.account}">
         <c:if test="${sessionScope.account.roleid == 1 or sessionScope.account.roleid == 2}"><a href="${ctx}/dashboard">Dashboard</a></c:if>
@@ -24,15 +25,41 @@
 <main class="page">
   <section class="hero">
     <div class="hero-copy">
-      <p class="eyebrow">Lập trình Web · JPA · MVC</p>
+      <p class="eyebrow">Lập trình Web · JPA · MVC · Multipart</p>
       <h1>Mua sắm công nghệ<br>đơn giản và nhanh chóng</h1>
-      <p class="muted">Laptop, điện thoại và sách được quản lý bằng JPA/Hibernate trên SQL Server. Đăng nhập để xem danh mục sản phẩm dành riêng cho bạn.</p>
+      <p class="muted">Laptop, điện thoại và sách được quản lý bằng JPA/Hibernate trên SQL Server. Video mới nhất của cửa hàng được cập nhật ngay bên dưới.</p>
       <div class="hero-actions">
         <a class="button" href="${ctx}/products">Xem sản phẩm</a>
-        <c:if test="${empty sessionScope.account}"><a class="button secondary" href="${ctx}/register">Tạo tài khoản</a></c:if>
+        <c:choose>
+          <c:when test="${not empty sessionScope.account}"><a class="button secondary" href="${ctx}/video/upload">Tải video lên</a></c:when>
+          <c:otherwise><a class="button secondary" href="${ctx}/register">Tạo tài khoản</a></c:otherwise>
+        </c:choose>
       </div>
     </div>
     <div class="hero-art" aria-hidden="true"><span>JPA</span><span>Hibernate</span><span>Servlet</span></div>
+  </section>
+
+  <section class="section">
+    <div class="section-head"><h2>Video mới nhất</h2><a href="${ctx}/video">Xem tất cả video →</a></div>
+    <div class="video-grid">
+      <c:forEach items="${videoList}" var="v">
+        <article class="video-card">
+          <a class="video-media" href="${ctx}/video/detail?id=${v.id}">
+            <video preload="metadata" muted playsinline>
+              <c:url value="/video-file" var="fileUrl"><c:param name="fname" value="${v.fileName}"/></c:url>
+              <source src="${fileUrl}">
+            </video>
+            <span class="play-badge" aria-hidden="true">▶</span>
+          </a>
+          <div class="video-body">
+            <h3><a href="${ctx}/video/detail?id=${v.id}"><c:out value="${v.title}"/></a></h3>
+            <p class="desc"><c:out value="${v.description}"/></p>
+            <p class="muted"><c:out value="${v.user.username}"/> · <fmt:formatDate value="${v.createdAt}" pattern="dd/MM/yyyy HH:mm"/></p>
+          </div>
+        </article>
+      </c:forEach>
+      <c:if test="${empty videoList}"><p class="muted empty-state">Chưa có video nào. Hãy tải video đầu tiên lên.</p></c:if>
+    </div>
   </section>
 
   <section class="section">

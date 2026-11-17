@@ -9,21 +9,25 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lt_web.service.CategoryService;
 import lt_web.service.ProductService;
+import lt_web.service.VideoService;
 import lt_web.service.impl.CategoryServiceImpl;
 import lt_web.service.impl.ProductServiceImpl;
+import lt_web.service.impl.VideoServiceImpl;
 
-@WebServlet(urlPatterns = { "", "/index" })
+@WebServlet(urlPatterns = { "", "/index", "/home" })
 public class IndexServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     private final CategoryService categories = new CategoryServiceImpl();
     private final ProductService products = new ProductServiceImpl();
+    private final VideoService videos = new VideoServiceImpl();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
         request.setAttribute("cateList", categories.getAll());
         request.setAttribute("productList", products.latest(6));
+        request.setAttribute("videoList", videos.latest(10));
         request.getRequestDispatcher("/views/index.jsp").forward(request, response);
     }
 }

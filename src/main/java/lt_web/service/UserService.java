@@ -1,5 +1,7 @@
 package lt_web.service;
 
+import java.util.List;
+
 import lt_web.entity.User;
 
 public interface UserService {
@@ -7,6 +9,7 @@ public interface UserService {
     User get(String username);
     User getById(int id);
     User getByEmail(String email);
+    List<User> all();
     User register(String username, String password, String confirm, String email, String fullname, String phone);
     boolean checkExistUsername(String username);
     boolean checkExistEmail(String email);

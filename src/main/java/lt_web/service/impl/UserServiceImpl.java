@@ -18,6 +18,7 @@ public class UserServiceImpl implements UserService {
     @Override public User getByEmail(String email) {
         return email == null || email.isBlank() ? null : repository.getByEmail(email.trim());
     }
+    @Override public java.util.List<User> all() { return repository.all(); }
 
     @Override public User login(String username, String password) {
         if (username == null || username.isBlank() || password == null || password.isEmpty())

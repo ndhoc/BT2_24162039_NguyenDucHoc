@@ -2,12 +2,13 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard | Shop 24162039</title><link rel="stylesheet" href="${ctx}/css/style.css?v=20261112-1"></head><body>
+<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard | Shop 24162039</title><link rel="stylesheet" href="${ctx}/css/style.css?v=20261116-2"></head><body>
 <header class="site-header">
-  <a class="brand" href="${ctx}/">Shop<span>24162039</span></a>
+  <a class="brand" href="${ctx}/home">Shop<span>24162039</span></a>
   <nav class="site-nav">
-    <a href="${ctx}/">Trang chủ</a>
+    <a href="${ctx}/home">Trang chủ</a>
     <a href="${ctx}/products">Sản phẩm</a>
+    <a href="${ctx}/video">Video</a>
     <a class="active" href="${ctx}/dashboard">Dashboard</a>
     <span class="who">Xin chào, <c:out value="${sessionScope.account.fullName}"/></span>
     <form action="${ctx}/logout" method="post" class="inline"><input type="hidden" name="csrf" value="${sessionScope.csrf}"><button class="link-button">Đăng xuất</button></form>
@@ -16,8 +17,9 @@
 <main class="page">
   <div class="section-head">
     <div><p class="eyebrow">Khu vực quản trị</p><h1>Dashboard</h1></div>
-    <div class="hero-actions">
-      <c:if test="${sessionScope.account.roleid == 1}"><a class="button" href="${ctx}/admin/category/list">Quản lý danh mục</a></c:if>
+    <div class="hero-actions dashboard-actions">
+      <c:if test="${sessionScope.account.roleid == 1}"><a class="button secondary" href="${ctx}/admin/video/list">Quản lý video</a></c:if>
+      <c:if test="${sessionScope.account.roleid == 1}"><a class="button secondary" href="${ctx}/admin/category/list">Quản lý danh mục</a></c:if>
       <a class="button secondary" href="${ctx}/products">Xem cửa hàng</a>
     </div>
   </div>
