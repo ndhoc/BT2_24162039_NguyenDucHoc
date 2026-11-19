@@ -9,6 +9,8 @@ import lt_web.repository.IUserRepository;
 import lt_web.repository.impl.UserRepository;
 import lt_web.service.UserService;
 import lt_web.utils.PasswordUtils;
+import lt_web.validation.FormValidation;
+import lt_web.validation.FormValidation.FieldError;
 
 public class UserServiceImpl implements UserService {
     private final IUserRepository repository = new UserRepository();
@@ -21,8 +23,7 @@ public class UserServiceImpl implements UserService {
     @Override public java.util.List<User> all() { return repository.all(); }
 
     @Override public User login(String username, String password) {
-        if (username == null || username.isBlank() || password == null || password.isEmpty())
-            throw new IllegalArgumentException("Tài khoản và mật khẩu không được để trống.");
+        FormValidation.login(username, password);
         User user = repository.get(username.trim());
         if (user == null || !PasswordUtils.verify(password, user.getPassword()))
             throw new IllegalArgumentException("Tên đăng nhập hoặc mật khẩu không đúng.");
@@ -37,22 +38,14 @@ public class UserServiceImpl implements UserService {
     @Override public long count() { return repository.count(); }
 
     @Override public User register(String username, String password, String confirm, String email, String fullname, String phone) {
-        username = username == null ? "" : username.trim();
-        email = email == null ? "" : email.trim();
-        fullname = fullname == null ? "" : fullname.trim();
-        phone = phone == null ? "" : phone.trim();
-        if (!username.matches("[A-Za-z0-9_]{3,50}"))
-            throw new IllegalArgumentException("Tài khoản gồm 3–50 chữ cái, chữ số hoặc dấu gạch dưới.");
-        if (password == null || password.length() < 6 || password.length() > 128)
-            throw new IllegalArgumentException("Mật khẩu phải có 6–128 ký tự.");
-        if (!password.equals(confirm)) throw new IllegalArgumentException("Mật khẩu xác nhận không khớp.");
-        if (email.length() > 255 || !email.matches("[^\\s@]+@[^\\s@]+\\.[^\\s@]+"))
-            throw new IllegalArgumentException("Email không hợp lệ.");
-        if (fullname.isEmpty() || fullname.length() > 100) throw new IllegalArgumentException("Họ tên phải có 1–100 ký tự.");
-        if (phone.length() > 15 || !phone.matches("\\+?[0-9]{9,15}")) throw new IllegalArgumentException("Số điện thoại phải có 9–15 chữ số (có thể bắt đầu bằng +).");
-        if (checkExistUsername(username)) throw new IllegalArgumentException("Tài khoản đã tồn tại.");
-        if (checkExistEmail(email)) throw new IllegalArgumentException("Email đã tồn tại.");
-        if (checkExistPhone(phone)) throw new IllegalArgumentException("Số điện thoại đã tồn tại.");
+        username = FormValidation.username(username);
+        email = FormValidation.email(email);
+        fullname = FormValidation.requiredText("fullname", fullname, 100, "Họ tên");
+        phone = FormValidation.phone(phone);
+        FormValidation.newPassword(password, confirm);
+        if (checkExistUsername(username)) throw new FieldError("username", "Tài khoản đã tồn tại.");
+        if (checkExistEmail(email)) throw new FieldError("email", "Email đã tồn tại.");
+        if (checkExistPhone(phone)) throw new FieldError("phone", "Số điện thoại đã tồn tại.");
         User user = new User(username, fullname);
         user.setEmail(email); user.setPhone(phone); user.setPassword(PasswordUtils.hash(password));
         user.setRoleid(5); user.setCreatedDate(LocalDate.now()); user.setActive(Boolean.FALSE);

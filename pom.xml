@@ -75,12 +75,11 @@
       <scope>compile</scope>
     </dependency>
 
-    <!-- Source: https://mvnrepository.com/artifact/org.sitemesh/sitemesh -->
+    <!-- Layout Master -->
     <dependency>
       <groupId>org.sitemesh</groupId>
-      <artifactId>sitemesh</artifactId>
-      <version>3.2.3</version>
-      <scope>compile</scope>
+      <artifactId>sitemesh-webfilter</artifactId>
+      <version>3.3.0</version>
     </dependency>
 
     <!-- Jakarta Mail API + Angus implementation: gửi OTP qua email -->
@@ -94,6 +93,15 @@
       <artifactId>angus-mail</artifactId>
       <version>2.0.3</version>
     </dependency>
+
+    <!-- Source: https://mvnrepository.com/artifact/org.projectlombok/lombok -->
+	<dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.18.48</version>
+      <scope>provided</scope>
+	</dependency>
+
   </dependencies>
 
   <build>

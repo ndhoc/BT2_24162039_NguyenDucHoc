@@ -2,22 +2,8 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Danh sách video | Shop 24162039</title><link rel="stylesheet" href="${ctx}/css/style.css?v=20261116-2"></head><body>
-<header class="site-header">
-  <a class="brand" href="${ctx}/home">Shop<span>24162039</span></a>
-  <nav class="site-nav">
-    <a href="${ctx}/home">Trang chủ</a>
-    <a href="${ctx}/products">Sản phẩm</a>
-    <a class="active" href="${ctx}/video">Video</a>
-    <c:choose>
-      <c:when test="${not empty sessionScope.account}">
-        <span class="who">Xin chào, <c:out value="${sessionScope.account.fullName}"/></span>
-        <form action="${ctx}/logout" method="post" class="inline"><input type="hidden" name="csrf" value="${sessionScope.csrf}"><button class="link-button">Đăng xuất</button></form>
-      </c:when>
-      <c:otherwise><a href="${ctx}/login">Đăng nhập</a><a href="${ctx}/register">Đăng ký</a></c:otherwise>
-    </c:choose>
-  </nav>
-</header>
+<!doctype html>
+<html><head><title>Danh sách video | Shop 24162039</title></head><body>
 <main class="page">
   <div class="section-head">
     <div><p class="eyebrow">Thư viện video</p><h1>Tất cả video</h1></div>
@@ -61,5 +47,4 @@
     </nav>
   </c:if>
 </main>
-<footer class="site-footer">Nguyễn Đức Học · MSSV 24162039</footer>
 </body></html>

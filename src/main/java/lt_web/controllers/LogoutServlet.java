@@ -5,11 +5,12 @@ import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
 import lt_web.utils.AuthCookies;
+import lt_web.utils.JspView;
 
 @WebServlet("/logout")
 public class LogoutServlet extends HttpServlet {
     @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/views/logout.jsp").forward(req, resp);
+        JspView.render(req, resp, "/views/logout.jsp");
     }
     @Override protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws IOException {
         AuthCookies.clear(req, resp);

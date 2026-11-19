@@ -8,23 +8,18 @@ import lt_web.entity.Video;
 import lt_web.repository.IVideoRepository;
 import lt_web.repository.impl.VideoRepository;
 import lt_web.service.VideoService;
+import lt_web.validation.FormValidation;
+import lt_web.validation.FormValidation.FieldError;
 
 public class VideoServiceImpl implements VideoService {
     private final IVideoRepository repository = new VideoRepository();
 
     private void validate(Video video, boolean requireFile) {
-        String title = video.getTitle() == null ? "" : video.getTitle().trim();
-        if (title.isEmpty() || title.length() > 255) throw new IllegalArgumentException("Tiêu đề video phải có 1–255 ký tự.");
-        video.setTitle(title);
-        if (video.getDescription() != null) {
-            String description = video.getDescription().trim();
-            if (description.length() > 1000)
-                throw new IllegalArgumentException("Mô tả tối đa 1000 ký tự.");
-            video.setDescription(description.isEmpty() ? null : description);
-        }
+        video.setTitle(FormValidation.requiredText("title", video.getTitle(), 255, "Tiêu đề video"));
+        video.setDescription(FormValidation.description(video.getDescription()));
         if (requireFile && (video.getFileName() == null || video.getFileName().isBlank()))
-            throw new IllegalArgumentException("Vui lòng chọn tệp video.");
-        if (video.getUser() == null) throw new IllegalArgumentException("Video phải thuộc về một tài khoản.");
+            throw new FieldError("videoFile", "Vui lòng chọn tệp video.");
+        if (video.getUser() == null) throw new FieldError("userId", "Video phải thuộc về một tài khoản.");
         if (video.getCreatedAt() == null) video.setCreatedAt(Date.from(Instant.now()));
     }
 

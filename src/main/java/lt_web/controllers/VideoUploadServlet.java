@@ -15,6 +15,9 @@ import lt_web.entity.Video;
 import lt_web.service.VideoService;
 import lt_web.service.impl.VideoServiceImpl;
 import lt_web.utils.VideoStorage;
+import lt_web.validation.FormValidation;
+import lt_web.validation.FormValidation.FieldError;
+import lt_web.utils.JspView;
 
 /** Thành viên tự tải video lên bằng Multipart; video thuộc về tài khoản đang đăng nhập. */
 @WebServlet("/video/upload")
@@ -29,7 +32,7 @@ public class VideoUploadServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         User account = (User) req.getSession().getAttribute("account");
         if (account == null) { resp.sendRedirect(req.getContextPath() + "/login"); return; }
-        req.getRequestDispatcher("/views/video-upload.jsp").forward(req, resp);
+        JspView.render(req, resp, "/views/video-upload.jsp");
     }
 
     @Override
@@ -41,15 +44,14 @@ public class VideoUploadServlet extends HttpServlet {
         boolean persisted = false;
         try {
             Video video = new Video();
-            video.setTitle(req.getParameter("title"));
-            String description = req.getParameter("description");
-            video.setDescription(description == null || description.isBlank() ? null : description);
+            video.setTitle(FormValidation.requiredText("title", req.getParameter("title"), 255, "Tiêu đề video"));
+            video.setDescription(FormValidation.description(req.getParameter("description")));
             video.setUser(account);
             video.setCreatedAt(Instant.now());
 
             Part part = req.getPart("videoFile");
             newFile = VideoStorage.save(part);
-            if (newFile == null) throw new IllegalArgumentException("Vui lòng chọn tệp video.");
+            if (newFile == null) throw new FieldError("videoFile", "Vui lòng chọn tệp video.");
             video.setFileName(newFile);
 
             videos.insert(video);
@@ -57,16 +59,16 @@ public class VideoUploadServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/video?saved=1");
         } catch (IllegalArgumentException e) {
             cleanup(newFile);
-            req.setAttribute("alert", e.getMessage());
+            FormErrors.show(req, e);
             req.setAttribute("titleValue", req.getParameter("title"));
             req.setAttribute("descriptionValue", req.getParameter("description"));
-            req.getRequestDispatcher("/views/video-upload.jsp").forward(req, resp);
+            JspView.render(req, resp, "/views/video-upload.jsp");
         } catch (IllegalStateException e) {
             cleanup(newFile);
             req.setAttribute("alert", "Video vượt quá dung lượng tối đa 50 MB.");
             req.setAttribute("titleValue", req.getParameter("title"));
             req.setAttribute("descriptionValue", req.getParameter("description"));
-            req.getRequestDispatcher("/views/video-upload.jsp").forward(req, resp);
+            JspView.render(req, resp, "/views/video-upload.jsp");
         } catch (RuntimeException | IOException | ServletException e) {
             if (!persisted) cleanup(newFile);
             throw e;

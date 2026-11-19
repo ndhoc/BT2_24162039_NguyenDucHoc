@@ -13,6 +13,7 @@ import lt_web.service.AccountVerificationService;
 import lt_web.service.UserService;
 import lt_web.service.impl.AccountVerificationServiceImpl;
 import lt_web.service.impl.UserServiceImpl;
+import lt_web.utils.JspView;
 
 @WebServlet("/register")
 public class RegisterServlet extends HttpServlet {
@@ -20,7 +21,7 @@ public class RegisterServlet extends HttpServlet {
     private final AccountVerificationService verification = new AccountVerificationServiceImpl();
 
     @Override protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
+        JspView.render(req, resp, "/views/register.jsp");
     }
 
     @Override protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
@@ -38,11 +39,11 @@ public class RegisterServlet extends HttpServlet {
                 req.setAttribute("alert", "Tài khoản đã được tạo nhưng chưa gửi được email OTP: "
                         + mailError.getMessage() + " Hãy dùng nút gửi lại mã bên dưới.");
                 req.setAttribute("username", user.getUsername());
-                req.getRequestDispatcher("/views/activate.jsp").forward(req, resp);
+                JspView.render(req, resp, "/views/activate.jsp");
             }
         } catch (IllegalArgumentException e) {
-            req.setAttribute("alert", e.getMessage());
-            req.getRequestDispatcher("/views/register.jsp").forward(req, resp);
+            FormErrors.show(req, e);
+            JspView.render(req, resp, "/views/register.jsp");
         }
     }
 }

@@ -13,6 +13,7 @@ import lt_web.service.AccountVerificationService;
 import lt_web.service.UserService;
 import lt_web.service.impl.AccountVerificationServiceImpl;
 import lt_web.service.impl.UserServiceImpl;
+import lt_web.utils.JspView;
 
 /** Kích hoạt tài khoản bằng mã OTP gửi qua email sau khi đăng ký. */
 @WebServlet("/activate")
@@ -40,7 +41,7 @@ public class ActivateServlet extends HttpServlet {
             req.setAttribute("username", user.getUsername());
             req.setAttribute("maskedEmail", mask(user.getEmail()));
         }
-        req.getRequestDispatcher("/views/activate.jsp").forward(req, resp);
+        JspView.render(req, resp, "/views/activate.jsp");
     }
 
     @Override
@@ -70,13 +71,13 @@ public class ActivateServlet extends HttpServlet {
             req.setAttribute("username", user.getUsername());
             req.setAttribute("maskedEmail", mask(user.getEmail()));
         } catch (IllegalArgumentException e) {
-            req.setAttribute("alert", e.getMessage());
+            FormErrors.show(req, e);
             if (user != null) {
                 req.setAttribute("username", user.getUsername());
                 req.setAttribute("maskedEmail", mask(user.getEmail()));
             }
         }
-        req.getRequestDispatcher("/views/activate.jsp").forward(req, resp);
+        JspView.render(req, resp, "/views/activate.jsp");
     }
 
     private static String mask(String email) {

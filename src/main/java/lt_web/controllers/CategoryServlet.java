@@ -8,6 +8,8 @@ import lt_web.entity.Category;
 import lt_web.service.CategoryService;
 import lt_web.service.impl.CategoryServiceImpl;
 import lt_web.utils.ImageStorage;
+import lt_web.validation.FormValidation;
+import lt_web.utils.JspView;
 
 @WebServlet({"/admin/category/list", "/admin/category/add", "/admin/category/edit", "/admin/category/delete"})
 @MultipartConfig(fileSizeThreshold = 1048576, maxFileSize = 5242880, maxRequestSize = 6291456)
@@ -15,9 +17,7 @@ public class CategoryServlet extends HttpServlet {
     private final CategoryService categories = new CategoryServiceImpl();
     private String action(HttpServletRequest req) { return req.getServletPath().substring(req.getServletPath().lastIndexOf('/') + 1); }
     private int id(HttpServletRequest req) {
-        try { int id = Integer.parseInt(req.getParameter("id")); if (id > 0) return id; }
-        catch (NumberFormatException ignored) { }
-        throw new IllegalArgumentException("Mã danh mục không hợp lệ.");
+        return FormValidation.positiveId("id", req.getParameter("id"), "Mã danh mục không hợp lệ.");
     }
     private Category existing(HttpServletRequest req) {
         Category category = categories.get(id(req));
@@ -29,11 +29,11 @@ public class CategoryServlet extends HttpServlet {
             String action = action(req);
             if (action.equals("list")) {
                 req.setAttribute("cateList", categories.search(req.getParameter("q")));
-                req.getRequestDispatcher("/views/admin/list-category.jsp").forward(req, resp);
+                JspView.render(req, resp, "/views/admin/list-category.jsp");
             } else {
                 if (!action.equals("add")) req.setAttribute("category", existing(req));
                 req.setAttribute("editing", action.equals("edit"));
-                req.getRequestDispatcher(action.equals("delete") ? "/views/admin/delete-category.jsp" : "/views/admin/category-form.jsp").forward(req, resp);
+                JspView.render(req, resp, action.equals("delete") ? "/views/admin/delete-category.jsp" : "/views/admin/category-form.jsp");
             }
         } catch (IllegalArgumentException e) { resp.sendError(404, e.getMessage()); }
     }
@@ -51,8 +51,7 @@ public class CategoryServlet extends HttpServlet {
                 String oldIcon = null;
                 if (action.equals("edit")) { category = existing(req); oldIcon = category.getIcon(); }
                 category.setName(req.getParameter("catename"));
-                if (category.getName() == null || category.getName().isBlank() || category.getName().trim().length() > 255)
-                    throw new IllegalArgumentException("Tên danh mục phải có 1–255 ký tự.");
+                category.setName(FormValidation.requiredText("catename", category.getName(), 255, "Tên danh mục"));
                 newIcon = ImageStorage.save(req.getPart("icon"));
                 if (newIcon != null) category.setIcon(newIcon);
                 if (action.equals("edit")) categories.edit(category); else categories.insert(category);
@@ -61,9 +60,10 @@ public class CategoryServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/admin/category/list?saved=" + action);
         } catch (IllegalArgumentException e) {
             cleanup(newIcon);
-            req.setAttribute("alert", e.getMessage()); req.setAttribute("category", category);
+            FormErrors.show(req, e);
+            req.setAttribute("category", category);
             req.setAttribute("editing", action.equals("edit"));
-            req.getRequestDispatcher(action.equals("delete") ? "/views/admin/delete-category.jsp" : "/views/admin/category-form.jsp").forward(req, resp);
+            JspView.render(req, resp, action.equals("delete") ? "/views/admin/delete-category.jsp" : "/views/admin/category-form.jsp");
         } catch (RuntimeException | IOException | ServletException e) { cleanup(newIcon); throw e; }
     }
     private void cleanup(String icon) {

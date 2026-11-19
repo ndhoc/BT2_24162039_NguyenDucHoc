@@ -8,6 +8,7 @@ import java.nio.file.StandardCopyOption;
 import java.util.UUID;
 
 import jakarta.servlet.http.Part;
+import lt_web.validation.FormValidation.FieldError;
 
 /** Lưu tệp video do người dùng tải lên bằng Multipart, kiểm tra chữ ký tệp. */
 public final class VideoStorage {
@@ -29,7 +30,7 @@ public final class VideoStorage {
      */
     public static String save(Part part) throws IOException {
         if (part == null || part.getSize() == 0) return null;
-        if (part.getSize() > MAX_SIZE) throw new IllegalArgumentException("Video tối đa 50 MB.");
+        if (part.getSize() > MAX_SIZE) throw new FieldError("videoFile", "Video tối đa 50 MB.");
         try (InputStream raw = part.getInputStream()) {
             java.io.BufferedInputStream input = new java.io.BufferedInputStream(raw);
             input.mark(16);
@@ -38,7 +39,7 @@ public final class VideoStorage {
             input.reset();
             String extension = extensionOf(head, read);
             if (extension == null)
-                throw new IllegalArgumentException("Chỉ chấp nhận video MP4, WebM hoặc OGG hợp lệ.");
+                throw new FieldError("videoFile", "Chỉ chấp nhận video MP4, WebM hoặc OGG hợp lệ.");
             String filename = UUID.randomUUID() + "." + extension;
             Path target = directory().resolve(filename);
             Files.copy(input, target, StandardCopyOption.REPLACE_EXISTING);

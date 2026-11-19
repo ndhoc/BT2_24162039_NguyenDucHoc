@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lt_web.entity.User;
 import lt_web.service.AuthService;
 import lt_web.utils.AuthCookies;
+import lt_web.utils.JspView;
 
 @WebServlet("/login")
 public class LoginServlet extends HttpServlet {
@@ -23,7 +24,7 @@ public class LoginServlet extends HttpServlet {
         if (request.getSession().getAttribute("account") != null) {
             response.sendRedirect(request.getContextPath() + "/waiting"); return;
         }
-        request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+        JspView.render(request, response, "/views/login.jsp");
     }
 
     @Override
@@ -46,10 +47,10 @@ public class LoginServlet extends HttpServlet {
             if (pending != null) request.getSession().setAttribute("pendingActivation", pending.getId());
             request.setAttribute("alert", e.getMessage());
             request.setAttribute("pendingUsername", pending == null ? null : pending.getUsername());
-            request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+            JspView.render(request, response, "/views/login.jsp");
         } catch (IllegalArgumentException e) {
-            request.setAttribute("alert", e.getMessage());
-            request.getRequestDispatcher("/views/login.jsp").forward(request, response);
+            FormErrors.show(request, e);
+            JspView.render(request, response, "/views/login.jsp");
         }
     }
 }

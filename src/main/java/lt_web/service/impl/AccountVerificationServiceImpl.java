@@ -13,6 +13,8 @@ import lt_web.service.AccountVerificationService;
 import lt_web.utils.MailSender;
 import lt_web.utils.OtpCodes;
 import lt_web.utils.PasswordUtils;
+import lt_web.validation.FormValidation;
+import lt_web.validation.FormValidation.FieldError;
 
 public class AccountVerificationServiceImpl implements AccountVerificationService {
     private static final Duration LIFETIME = Duration.ofMinutes(10);
@@ -46,9 +48,7 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
 
     @Override
     public void resetPassword(int userId, String password, String confirm) {
-        if (password == null || password.length() < 6 || password.length() > 128)
-            throw new IllegalArgumentException("Mật khẩu phải có 6–128 ký tự.");
-        if (!password.equals(confirm)) throw new IllegalArgumentException("Mật khẩu xác nhận không khớp.");
+        FormValidation.newPassword(password, confirm);
         OtpToken token = tokens.find(userId, OtpToken.PURPOSE_RESET);
         if (token == null || token.getExpiresAt().isBefore(Instant.now()))
             throw new IllegalArgumentException(OTP_EXPIRED);
@@ -70,7 +70,7 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
 
     private User verify(int userId, String purpose, String code) {
         if (code == null || !code.trim().matches("[0-9]{6}"))
-            throw new IllegalArgumentException("Mã OTP phải gồm 6 chữ số.");
+            throw new FieldError("code", "Mã OTP phải gồm 6 chữ số.");
         OtpToken token = tokens.find(userId, purpose);
         if (token == null || token.getExpiresAt().isBefore(Instant.now())) {
             if (token != null) tokens.delete(userId, purpose);
@@ -82,7 +82,7 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
         }
         if (!OtpCodes.matches(code, token.getCodeHash(), purpose, userId)) {
             tokens.incrementAttempts(token.getId());
-            throw new IllegalArgumentException(OTP_INVALID);
+            throw new FieldError("code", OTP_INVALID);
         }
         User user = users.getById(userId);
         if (user == null) throw new IllegalArgumentException("Tài khoản không tồn tại.");

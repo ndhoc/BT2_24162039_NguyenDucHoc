@@ -13,6 +13,7 @@ import lt_web.service.VideoService;
 import lt_web.service.impl.CategoryServiceImpl;
 import lt_web.service.impl.ProductServiceImpl;
 import lt_web.service.impl.VideoServiceImpl;
+import lt_web.utils.JspView;
 
 @WebServlet(urlPatterns = { "", "/index", "/home" })
 public class IndexServlet extends HttpServlet {
@@ -28,6 +29,6 @@ public class IndexServlet extends HttpServlet {
         request.setAttribute("cateList", categories.getAll());
         request.setAttribute("productList", products.latest(6));
         request.setAttribute("videoList", videos.latest(10));
-        request.getRequestDispatcher("/views/index.jsp").forward(request, response);
+        JspView.render(request, response, "/views/index.jsp");
     }
 }

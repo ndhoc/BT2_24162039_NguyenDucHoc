@@ -12,6 +12,9 @@
     boxes.className = 'otp-boxes';
     boxes.setAttribute('role', 'group');
     boxes.setAttribute('aria-label', 'Mã OTP gồm 6 chữ số');
+    if (hidden.hasAttribute('aria-describedby')) {
+      boxes.setAttribute('aria-describedby', hidden.getAttribute('aria-describedby'));
+    }
 
     var inputs = [];
     for (var i = 0; i < 6; i++) {
@@ -20,9 +23,13 @@
       box.inputMode = 'numeric';
       box.autocomplete = i === 0 ? 'one-time-code' : 'off';
       box.maxLength = 1;
+      box.required = true;
       box.className = 'otp-box';
       box.id = 'otp-box-' + i;
       box.setAttribute('aria-label', 'Chữ số thứ ' + (i + 1));
+      if (hidden.getAttribute('aria-invalid') === 'true') {
+        box.setAttribute('aria-invalid', 'true');
+      }
       boxes.appendChild(box);
       inputs.push(box);
     }
@@ -40,6 +47,8 @@
     hidden.removeAttribute('autocomplete');
     hidden.removeAttribute('placeholder');
     hidden.removeAttribute('aria-label');
+    hidden.removeAttribute('aria-invalid');
+    hidden.removeAttribute('aria-describedby');
 
     function sync() {
       hidden.value = inputs.map(function (input) { return input.value; }).join('');

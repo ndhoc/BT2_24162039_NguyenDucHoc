@@ -2,7 +2,8 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Quản lý video | 24162039</title><link rel="stylesheet" href="${ctx}/css/style.css?v=20261119-1"></head><body><main class="card wide">
+<!doctype html>
+<html><head><title>Quản lý video | 24162039</title></head><body><main class="card wide">
 <header><div><p class="eyebrow">Quản trị · Nguyễn Đức Học · 24162039</p><h1>Quản lý video</h1></div><a href="${ctx}/dashboard">Dashboard</a></header>
 <c:if test="${not empty param.saved}"><p class="success" role="status">Thao tác video thành công.</p></c:if>
 <div class="toolbar">

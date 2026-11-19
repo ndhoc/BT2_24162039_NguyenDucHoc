@@ -48,12 +48,20 @@ public final class JpaConfig {
     }
 
     public static void write(Consumer<EntityManager> work) {
+        writeResult(em -> {
+            work.accept(em);
+            return null;
+        });
+    }
+
+    public static <T> T writeResult(Function<EntityManager, T> work) {
         EntityManager em = createEntityManager();
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
-            work.accept(em);
+            T result = work.apply(em);
             tx.commit();
+            return result;
         } catch (DataAccessException | IllegalArgumentException e) {
             if (tx.isActive()) tx.rollback();
             throw e;

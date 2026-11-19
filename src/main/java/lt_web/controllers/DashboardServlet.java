@@ -13,6 +13,7 @@ import lt_web.service.UserService;
 import lt_web.service.impl.CategoryServiceImpl;
 import lt_web.service.impl.ProductServiceImpl;
 import lt_web.service.impl.UserServiceImpl;
+import lt_web.utils.JspView;
 
 @WebServlet("/dashboard")
 public class DashboardServlet extends HttpServlet {
@@ -28,6 +29,6 @@ public class DashboardServlet extends HttpServlet {
         req.setAttribute("totalValue", products.totalValue());
         req.setAttribute("categoryStats", products.countByCategory());
         req.setAttribute("recentProducts", products.latest(5));
-        req.getRequestDispatcher("/views/dashboard.jsp").forward(req, resp);
+        JspView.render(req, resp, "/views/dashboard.jsp");
     }
 }

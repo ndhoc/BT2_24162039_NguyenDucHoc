@@ -2,22 +2,14 @@
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
 <%@ taglib prefix="fmt" uri="jakarta.tags.fmt" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Dashboard | Shop 24162039</title><link rel="stylesheet" href="${ctx}/css/style.css?v=20261116-2"></head><body>
-<header class="site-header">
-  <a class="brand" href="${ctx}/home">Shop<span>24162039</span></a>
-  <nav class="site-nav">
-    <a href="${ctx}/home">Trang chủ</a>
-    <a href="${ctx}/products">Sản phẩm</a>
-    <a href="${ctx}/video">Video</a>
-    <a class="active" href="${ctx}/dashboard">Dashboard</a>
-    <span class="who">Xin chào, <c:out value="${sessionScope.account.fullName}"/></span>
-    <form action="${ctx}/logout" method="post" class="inline"><input type="hidden" name="csrf" value="${sessionScope.csrf}"><button class="link-button">Đăng xuất</button></form>
-  </nav>
-</header>
+<fmt:setLocale value="vi_VN"/>
+<!doctype html>
+<html><head><title>Dashboard | Shop 24162039</title></head><body>
 <main class="page">
   <div class="section-head">
     <div><p class="eyebrow">Khu vực quản trị</p><h1>Dashboard</h1></div>
     <div class="hero-actions dashboard-actions">
+      <c:if test="${sessionScope.account.roleid == 1}"><a class="button secondary" href="${ctx}/admin/product/list">Quản lý sản phẩm</a></c:if>
       <c:if test="${sessionScope.account.roleid == 1}"><a class="button secondary" href="${ctx}/admin/video/list">Quản lý video</a></c:if>
       <c:if test="${sessionScope.account.roleid == 1}"><a class="button secondary" href="${ctx}/admin/category/list">Quản lý danh mục</a></c:if>
       <a class="button secondary" href="${ctx}/products">Xem cửa hàng</a>
@@ -28,7 +20,7 @@
     <div class="stat"><span>Sản phẩm</span><strong>${productCount}</strong></div>
     <div class="stat"><span>Danh mục</span><strong>${categoryCount}</strong></div>
     <div class="stat"><span>Người dùng</span><strong>${userCount}</strong></div>
-    <div class="stat"><span>Tổng giá trị sản phẩm</span><strong><fmt:formatNumber value="${totalValue}" type="number" maxFractionDigits="0"/> ₫</strong></div>
+    <div class="stat"><span>Tổng giá trị sản phẩm</span><strong><fmt:formatNumber value="${totalValue}" type="number" maxFractionDigits="2"/> ₫</strong></div>
   </div>
 
   <div class="dashboard-grid">
@@ -52,10 +44,10 @@
         <tbody>
         <c:forEach items="${recentProducts}" var="p">
           <tr>
-            <td><img class="thumb" src="${ctx}/${p.image}" alt="<c:out value='${p.name}'/>"></td>
-            <td><c:out value="${p.name}"/></td>
+            <td><c:if test="${not empty p.image}"><img class="thumb" src="${ctx}/<c:out value='${p.image}'/>" alt=""></c:if></td>
+            <td><a href="${ctx}/products/detail?id=${p.id}"><c:out value="${p.name}"/></a></td>
             <td><c:out value="${p.category.name}"/></td>
-            <td class="nowrap"><fmt:formatNumber value="${p.price}" type="number" maxFractionDigits="0"/> ₫</td>
+            <td class="nowrap"><fmt:formatNumber value="${p.price}" type="number" maxFractionDigits="2"/> ₫</td>
           </tr>
         </c:forEach>
         <c:if test="${empty recentProducts}"><tr><td colspan="4" class="muted">Chưa có sản phẩm.</td></tr></c:if>
@@ -64,5 +56,4 @@
     </section>
   </div>
 </main>
-<footer class="site-footer">Nguyễn Đức Học · MSSV 24162039 · Dashboard quản trị</footer>
 </body></html>

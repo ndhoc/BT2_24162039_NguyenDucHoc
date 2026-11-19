@@ -3,11 +3,54 @@ package lt_web.repository.impl;
 import java.math.BigDecimal;
 import java.util.List;
 
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
 import lt_web.entity.Product;
 import lt_web.repository.IProductRepository;
 import lt_web.repository.JpaConfig;
 
 public class ProductRepository implements IProductRepository {
+
+    @Override
+    public Product get(int id) {
+        return JpaConfig.read(em -> em.find(Product.class, id));
+    }
+
+    @Override
+    public void insert(Product product) {
+        JpaConfig.write(em -> em.persist(product));
+    }
+
+    @Override
+    public String update(Product changes) {
+        return JpaConfig.writeResult(em -> {
+            Product product = findForUpdate(em, changes.getId());
+            product.setName(changes.getName());
+            product.setPrice(changes.getPrice());
+            product.setDescription(changes.getDescription());
+            product.setCategory(changes.getCategory());
+            if (changes.getImage() == null) return null;
+
+            String replacedImage = product.getImage();
+            product.setImage(changes.getImage());
+            return replacedImage;
+        });
+    }
+
+    @Override
+    public String delete(int id) {
+        return JpaConfig.writeResult(em -> {
+            Product product = findForUpdate(em, id);
+            em.remove(product);
+            return product.getImage();
+        });
+    }
+
+    private Product findForUpdate(EntityManager em, int id) {
+        Product product = em.find(Product.class, id, LockModeType.PESSIMISTIC_WRITE);
+        if (product == null) throw new IllegalArgumentException("Sản phẩm không tồn tại.");
+        return product;
+    }
 
     @Override
     public List<Product> latest(int limit) {

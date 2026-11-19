@@ -8,6 +8,7 @@ import jakarta.servlet.http.*;
 import lt_web.entity.User;
 import lt_web.repository.DataAccessException;
 import lt_web.utils.AuthCookies;
+import lt_web.utils.JspView;
 
 @WebFilter("/*")
 public class ApplicationFilter implements Filter {
@@ -17,8 +18,12 @@ public class ApplicationFilter implements Filter {
         HttpServletResponse resp = (HttpServletResponse) response;
         req.setCharacterEncoding("UTF-8"); resp.setCharacterEncoding("UTF-8");
         resp.setHeader("X-Content-Type-Options", "nosniff");
-        String path = req.getRequestURI().substring(req.getContextPath().length());
-        if (path.startsWith("/css/")) { chain.doFilter(req, resp); return; }
+        String path = req.getServletPath();
+        if (req.getPathInfo() != null) path += req.getPathInfo();
+        if (path.startsWith("/css/") || path.startsWith("/templates/")) {
+            chain.doFilter(req, resp);
+            return;
+        }
         resp.setHeader("Cache-Control", "no-store");
         try {
             HttpSession session = req.getSession();
@@ -29,7 +34,7 @@ public class ApplicationFilter implements Filter {
             }
             session = req.getSession();
             if (session.getAttribute("csrf") == null) session.setAttribute("csrf", UUID.randomUUID().toString());
-            if (path.startsWith("/views/")) { resp.sendError(404); return; }
+            if (path.startsWith("/views/") || path.startsWith("/common/")) { resp.sendError(404); return; }
             if (path.startsWith("/admin/") && account == null) {
                 resp.sendRedirect(req.getContextPath() + "/login"); return;
             }
@@ -59,7 +64,7 @@ public class ApplicationFilter implements Filter {
             req.getServletContext().log("JPA operation failed", e);
             resp.setStatus(503);
             req.setAttribute("errorMessage", "Không thể kết nối cơ sở dữ liệu. Vui lòng kiểm tra SQL Server và cấu hình META-INF/persistence.xml.");
-            req.getRequestDispatcher("/views/error.jsp").forward(req, resp);
+            JspView.render(req, resp, "/views/error.jsp");
         }
     }
 }

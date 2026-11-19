@@ -1,7 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="form" tagdir="/WEB-INF/tags" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Đặt lại mật khẩu | 24162039</title><link rel="stylesheet" href="${ctx}/css/style.css?v=20261116-2"></head><body>
+<!doctype html>
+<html><head><title>Đặt lại mật khẩu | 24162039</title></head><body>
 <main class="card auth">
 <p class="eyebrow">24162039 · Nguyễn Đức Học</p><h1>Đặt lại mật khẩu</h1>
 <p>Mã xác nhận đã được gửi tới <span class="otp-recipient"><c:out value="${maskedEmail}"/></span> cho tài khoản <strong><c:out value="${username}"/></strong>.</p>
@@ -16,10 +18,12 @@
       <input type="hidden" name="csrf" value="${sessionScope.csrf}">
       <input type="hidden" name="action" value="set-password">
       <label for="password">Mật khẩu mới</label>
-      <input id="password" type="password" name="password" minlength="6" maxlength="128" autocomplete="new-password" required>
+      <input id="password" type="password" name="password" aria-invalid="${not empty fieldErrors.password}" aria-describedby="password-error" class="form-control${empty fieldErrors.password ? '' : ' is-invalid'}" data-nonblank minlength="6" maxlength="128" autocomplete="new-password" required>
+      <form:field-error field="password" />
       <label for="confirm">Xác nhận mật khẩu mới</label>
-      <input id="confirm" type="password" name="confirm" minlength="6" maxlength="128" autocomplete="new-password" required>
-      <button type="submit">Đổi mật khẩu</button>
+      <input id="confirm" type="password" name="confirm" aria-invalid="${not empty fieldErrors.confirm}" aria-describedby="confirm-error" class="form-control${empty fieldErrors.confirm ? '' : ' is-invalid'}" data-match="password" minlength="6" maxlength="128" autocomplete="new-password" required>
+      <form:field-error field="confirm" />
+      <button class="btn btn-primary" type="submit">Đổi mật khẩu</button>
     </form>
   </c:when>
   <c:otherwise>
@@ -29,10 +33,11 @@
       <input type="hidden" name="action" value="verify-code">
       <div class="otp-field" data-otp>
         <label for="code-0">Mã xác nhận OTP</label>
-        <input id="code-0" class="otp-fallback" name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" placeholder="123456" required>
+        <input id="code-0" class="otp-fallback" name="code" aria-invalid="${not empty fieldErrors.code}" aria-describedby="code-error" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" placeholder="123456" required>
+        <form:field-error field="code" />
       </div>
       <p class="otp-hint">Nhập 6 chữ số trong email. Mã có hiệu lực 10 phút.</p>
-      <button type="submit">Xác nhận mã</button>
+      <button class="btn btn-primary" type="submit">Xác nhận mã</button>
     </form>
     <form action="${ctx}/reset-password" method="post" class="inline">
       <input type="hidden" name="csrf" value="${sessionScope.csrf}">
@@ -44,5 +49,5 @@
 
 <p class="auth-footer"><a href="${ctx}/forgot-password">Dùng email khác</a> <a href="${ctx}/login">Đăng nhập</a></p>
 </main>
-<script src="${ctx}/js/otp-input.js?v=20261116-1"></script>
+<script src="${ctx}/js/otp-input.js?v=bt3"></script>
 </body></html>

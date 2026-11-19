@@ -1,17 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="form" tagdir="/WEB-INF/tags" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Tải video lên | Shop 24162039</title><link rel="stylesheet" href="${ctx}/css/style.css?v=20261119-1"></head><body>
-<header class="site-header">
-  <a class="brand" href="${ctx}/home">Shop<span>24162039</span></a>
-  <nav class="site-nav">
-    <a href="${ctx}/home">Trang chủ</a>
-    <a href="${ctx}/products">Sản phẩm</a>
-    <a href="${ctx}/video">Video</a>
-    <span class="who">Xin chào, <c:out value="${sessionScope.account.fullName}"/></span>
-    <form action="${ctx}/logout" method="post" class="inline"><input type="hidden" name="csrf" value="${sessionScope.csrf}"><button class="link-button">Đăng xuất</button></form>
-  </nav>
-</header>
+<!doctype html>
+<html><head><title>Tải video lên | Shop 24162039</title></head><body>
 <main class="card auth">
 <p class="eyebrow">Upload Multipart</p><h1>Tải video lên</h1>
 <p class="muted">Chọn tệp MP4, WebM hoặc OGG tối đa 50 MB. Video được lưu ngoài WAR tại <code>uploads/video</code> và gắn với tài khoản của bạn.</p>
@@ -19,12 +11,15 @@
 <form action="${ctx}/video/upload" method="post" enctype="multipart/form-data">
   <input type="hidden" name="csrf" value="${sessionScope.csrf}">
   <label for="title">Tiêu đề video</label>
-  <input id="title" name="title" maxlength="255" value="<c:out value='${titleValue}'/>" required>
+  <input id="title" name="title" aria-invalid="${not empty fieldErrors.title}" aria-describedby="title-error" class="form-control${empty fieldErrors.title ? '' : ' is-invalid'}" data-nonblank maxlength="255" value="<c:out value='${titleValue}'/>" required>
+  <form:field-error field="title" />
   <label for="description">Mô tả</label>
-  <textarea id="description" name="description" maxlength="1000" rows="3"><c:out value="${descriptionValue}"/></textarea>
+  <textarea id="description" name="description" aria-invalid="${not empty fieldErrors.description}" aria-describedby="description-error" class="form-control${empty fieldErrors.description ? '' : ' is-invalid'}" maxlength="1000" rows="3"><c:out value="${descriptionValue}"/></textarea>
+  <form:field-error field="description" />
   <label for="videoFile">Tệp video</label>
-  <input id="videoFile" type="file" name="videoFile" accept="video/mp4,video/webm,video/ogg" required>
-  <button type="submit">Tải lên</button>
+  <input id="videoFile" type="file" name="videoFile" aria-invalid="${not empty fieldErrors.videoFile}" aria-describedby="videoFile-error" class="form-control${empty fieldErrors.videoFile ? '' : ' is-invalid'}" data-max-mb="50" accept="video/mp4,video/webm,video/ogg" required>
+  <form:field-error field="videoFile" />
+  <button class="btn btn-primary" type="submit">Tải lên</button>
 </form>
 <p class="auth-footer"><a href="${ctx}/video">← Danh sách video của tôi</a></p>
 </main></body></html>

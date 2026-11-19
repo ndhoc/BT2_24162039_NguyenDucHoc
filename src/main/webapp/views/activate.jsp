@@ -1,7 +1,9 @@
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ taglib prefix="c" uri="jakarta.tags.core" %>
+<%@ taglib prefix="form" tagdir="/WEB-INF/tags" %>
 <c:set var="ctx" value="${pageContext.request.contextPath}"/>
-<!DOCTYPE html><html lang="vi"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Kích hoạt tài khoản | 24162039</title><link rel="stylesheet" href="${ctx}/css/style.css?v=20261116-2"></head><body>
+<!doctype html>
+<html><head><title>Kích hoạt tài khoản | 24162039</title></head><body>
 <main class="card auth">
 <p class="eyebrow">24162039 · Nguyễn Đức Học</p><h1>Kích hoạt tài khoản</h1>
 <c:choose>
@@ -18,10 +20,11 @@
       <input type="hidden" name="csrf" value="${sessionScope.csrf}">
       <div class="otp-field" data-otp>
         <label for="code-0">Mã OTP</label>
-        <input id="code-0" class="otp-fallback" name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" placeholder="123456" required>
+        <input id="code-0" class="otp-fallback" name="code" aria-invalid="${not empty fieldErrors.code}" aria-describedby="code-error" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" autocomplete="one-time-code" placeholder="123456" required>
+        <form:field-error field="code" />
       </div>
       <p class="otp-hint">Nhập 6 chữ số trong email. Mã có hiệu lực 10 phút.</p>
-      <button type="submit">Kích hoạt</button>
+      <button class="btn btn-primary" type="submit">Kích hoạt</button>
     </form>
     <form action="${ctx}/activate" method="post" class="inline">
       <input type="hidden" name="csrf" value="${sessionScope.csrf}">
@@ -33,5 +36,5 @@
 </c:choose>
 <p class="muted">Kiểm thử cục bộ: khi chưa cấu hình SMTP, mã OTP được ghi vào <code>logs/otp-dev.log</code> của Tomcat.</p>
 </main>
-<script src="${ctx}/js/otp-input.js?v=20261116-1"></script>
+<script src="${ctx}/js/otp-input.js?v=bt3"></script>
 </body></html>

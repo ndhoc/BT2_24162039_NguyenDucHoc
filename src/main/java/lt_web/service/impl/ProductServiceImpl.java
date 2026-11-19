@@ -11,6 +11,10 @@ import lt_web.service.ProductService;
 public class ProductServiceImpl implements ProductService {
     private final IProductRepository repository = new ProductRepository();
 
+    @Override public Product get(int id) { return repository.get(id); }
+    @Override public void insert(Product product) { repository.insert(product); }
+    @Override public String update(Product product) { return repository.update(product); }
+    @Override public String delete(int id) { return repository.delete(id); }
     @Override public List<Product> latest(int limit) { return repository.latest(limit); }
     @Override public List<Product> search(Integer categoryId, String keyword) { return repository.search(categoryId, keyword); }
     @Override public long count() { return repository.count(); }

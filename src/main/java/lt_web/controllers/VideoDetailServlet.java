@@ -10,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lt_web.entity.Video;
 import lt_web.service.VideoService;
 import lt_web.service.impl.VideoServiceImpl;
+import lt_web.utils.JspView;
 
 /** Trang chi tiết và phát video. */
 @WebServlet("/video/detail")
@@ -35,6 +36,6 @@ public class VideoDetailServlet extends HttpServlet {
         }
         // Trang chủ hiển thị video của mọi tài khoản nên phần xem chi tiết công khai.
         req.setAttribute("video", video);
-        req.getRequestDispatcher("/views/video-detail.jsp").forward(req, resp);
+        JspView.render(req, resp, "/views/video-detail.jsp");
     }
 }

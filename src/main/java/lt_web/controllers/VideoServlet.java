@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lt_web.entity.Video;
 import lt_web.service.VideoService;
 import lt_web.service.impl.VideoServiceImpl;
+import lt_web.utils.JspView;
 
 /** Danh sách tất cả video, phân trang 6 video mỗi trang. */
 @WebServlet("/video")
@@ -36,6 +37,6 @@ public class VideoServlet extends HttpServlet {
         req.setAttribute("page", page);
         req.setAttribute("pageCount", pageCount);
         req.setAttribute("total", videos.count());
-        req.getRequestDispatcher("/views/video-list.jsp").forward(req, resp);
+        JspView.render(req, resp, "/views/video-list.jsp");
     }
 }

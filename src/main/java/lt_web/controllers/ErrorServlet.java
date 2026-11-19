@@ -8,6 +8,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import lt_web.utils.JspView;
 
 @WebServlet("/error")
 public class ErrorServlet extends HttpServlet {
@@ -24,6 +25,6 @@ public class ErrorServlet extends HttpServlet {
                 session.removeAttribute("loginError");
             }
         }
-        request.getRequestDispatcher("/views/error.jsp").forward(request, response);
+        JspView.render(request, response, "/views/error.jsp");
     }
 }

@@ -6,14 +6,13 @@ import lt_web.entity.Category;
 import lt_web.repository.ICategoryRepository;
 import lt_web.repository.impl.CategoryRepository;
 import lt_web.service.CategoryService;
+import lt_web.validation.FormValidation;
 
 public class CategoryServiceImpl implements CategoryService {
     private final ICategoryRepository repository = new CategoryRepository();
 
     private void validate(Category category) {
-        String name = category.getName() == null ? "" : category.getName().trim();
-        if (name.isEmpty() || name.length() > 255) throw new IllegalArgumentException("Tên danh mục phải có 1–255 ký tự.");
-        category.setName(name);
+        category.setName(FormValidation.requiredText("catename", category.getName(), 255, "Tên danh mục"));
     }
 
     @Override public void insert(Category category) { validate(category); repository.insert(category); }

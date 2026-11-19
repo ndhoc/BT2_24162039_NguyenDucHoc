@@ -17,6 +17,9 @@ import lt_web.service.VideoService;
 import lt_web.service.impl.UserServiceImpl;
 import lt_web.service.impl.VideoServiceImpl;
 import lt_web.utils.VideoStorage;
+import lt_web.validation.FormValidation;
+import lt_web.validation.FormValidation.FieldError;
+import lt_web.utils.JspView;
 
 /** CRUD video cho quản trị viên: /admin/video/list|add|edit|delete. */
 @WebServlet({"/admin/video/list", "/admin/video/add", "/admin/video/edit", "/admin/video/delete"})
@@ -34,11 +37,7 @@ public class AdminVideoServlet extends HttpServlet {
     }
 
     private int id(HttpServletRequest req) {
-        try {
-            int id = Integer.parseInt(req.getParameter("id"));
-            if (id > 0) return id;
-        } catch (NumberFormatException ignored) { }
-        throw new IllegalArgumentException("Mã video không hợp lệ.");
+        return FormValidation.positiveId("id", req.getParameter("id"), "Mã video không hợp lệ.");
     }
 
     private Video existing(HttpServletRequest req) {
@@ -62,13 +61,13 @@ public class AdminVideoServlet extends HttpServlet {
                             .toList();
                 }
                 req.setAttribute("videoList", list);
-                req.getRequestDispatcher("/views/admin/list-video.jsp").forward(req, resp);
+                JspView.render(req, resp, "/views/admin/list-video.jsp");
             } else {
                 if (!action.equals("add")) req.setAttribute("video", existing(req));
                 req.setAttribute("editing", action.equals("edit"));
                 req.setAttribute("userList", users.all());
-                req.getRequestDispatcher(action.equals("delete") ? "/views/admin/delete-video.jsp"
-                        : "/views/admin/video-form.jsp").forward(req, resp);
+                JspView.render(req, resp, action.equals("delete") ? "/views/admin/delete-video.jsp"
+                        : "/views/admin/video-form.jsp");
             }
         } catch (IllegalArgumentException e) {
             resp.sendError(404, e.getMessage());
@@ -96,18 +95,19 @@ public class AdminVideoServlet extends HttpServlet {
                 oldFile = video.getFileName();
             }
             video.setTitle(req.getParameter("title"));
-            String description = req.getParameter("description");
-            video.setDescription(description == null || description.isBlank() ? null : description);
-            int userId = Integer.parseInt(req.getParameter("userId"));
+            video.setDescription(req.getParameter("description"));
+            video.setTitle(FormValidation.requiredText("title", video.getTitle(), 255, "Tiêu đề video"));
+            video.setDescription(FormValidation.description(video.getDescription()));
+            int userId = FormValidation.positiveId("userId", req.getParameter("userId"), "Vui lòng chọn chủ sở hữu hợp lệ.");
             User owner = users.getById(userId);
-            if (owner == null) throw new IllegalArgumentException("Tài khoản chủ sở hữu không tồn tại.");
+            if (owner == null) throw new FieldError("userId", "Tài khoản chủ sở hữu không tồn tại.");
             video.setUser(owner);
             if (video.getCreatedAt() == null) video.setCreatedAt(Instant.now());
 
             Part part = req.getPart("videoFile");
             newFile = VideoStorage.save(part);
             if (newFile != null) video.setFileName(newFile);
-            else if (oldFile == null) throw new IllegalArgumentException("Vui lòng chọn tệp video.");
+            else if (oldFile == null) throw new FieldError("videoFile", "Vui lòng chọn tệp video.");
 
             if (action.equals("edit")) videos.update(video); else videos.insert(video);
             persisted = true;
@@ -116,18 +116,22 @@ public class AdminVideoServlet extends HttpServlet {
             resp.sendRedirect(req.getContextPath() + "/admin/video/list?saved=" + action);
         } catch (IllegalArgumentException e) {
             cleanup(newFile, "Không thể xóa tệp video sau thao tác không hợp lệ");
-            req.setAttribute("alert", e.getMessage());
+            if (action.equals("delete")) {
+                resp.sendError(404, e.getMessage());
+                return;
+            }
+            FormErrors.show(req, e);
             req.setAttribute("video", video);
             req.setAttribute("editing", action.equals("edit"));
             req.setAttribute("userList", users.all());
-            req.getRequestDispatcher("/views/admin/video-form.jsp").forward(req, resp);
+            JspView.render(req, resp, "/views/admin/video-form.jsp");
         } catch (IllegalStateException e) {
             cleanup(newFile, "Không thể xóa tệp video vượt dung lượng");
             req.setAttribute("alert", "Video vượt quá dung lượng tối đa 50 MB.");
             req.setAttribute("video", video);
             req.setAttribute("editing", action.equals("edit"));
             req.setAttribute("userList", users.all());
-            req.getRequestDispatcher("/views/admin/video-form.jsp").forward(req, resp);
+            JspView.render(req, resp, "/views/admin/video-form.jsp");
         } catch (RuntimeException | IOException | ServletException e) {
             if (!persisted) cleanup(newFile, "Không thể xóa tệp video sau khi lưu thất bại");
             throw e;
