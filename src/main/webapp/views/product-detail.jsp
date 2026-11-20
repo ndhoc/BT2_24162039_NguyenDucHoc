@@ -17,7 +17,7 @@
     <div class="product-detail-media">
       <c:choose>
         <c:when test="${not empty product.image}">
-          <img src="${ctx}/<c:out value='${product.image}'/>" alt="<c:out value='${product.name}'/>">
+          <img src="<c:out value='${product.image.startsWith("https://") ? product.image : ctx.concat("/").concat(product.image)}'/>" alt="<c:out value='${product.name}'/>">
         </c:when>
         <c:otherwise><span class="product-placeholder">Chưa có ảnh</span></c:otherwise>
       </c:choose>

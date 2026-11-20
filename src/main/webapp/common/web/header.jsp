@@ -3,7 +3,8 @@
 <header class="app-header navbar bg-white border-bottom">
   <div class="container-xl app-nav-container">
     <a class="brand navbar-brand" href="${ctx}/home">Shop<span>24162039</span></a>
-    <nav class="app-nav nav" aria-label="Điều hướng chính">
+    <button class="nav-toggle" type="button" aria-expanded="false" aria-controls="main-navigation" hidden>Menu</button>
+    <nav class="app-nav nav" id="main-navigation" aria-label="Điều hướng chính">
       <a class="nav-link" href="${ctx}/home">Trang chủ</a>
       <a class="nav-link" href="${ctx}/products">Sản phẩm</a>
       <a class="nav-link" href="${ctx}/video">Video</a>
@@ -13,7 +14,7 @@
           <c:if test="${sessionScope.account.roleid == 1 or sessionScope.account.roleid == 2}">
             <a class="nav-link" href="${ctx}/dashboard">Dashboard</a>
           </c:if>
-          <c:set var="defaultAvatar" value="${ctx}/images/default-avatar.png" />
+          <c:set var="defaultAvatar" value="https://res.cloudinary.com/djr3qad5v/image/upload/v1795144636/shop-24162039/site-assets/default-avatar-6918b9f64af3540f.png" />
           <a class="nav-link account-link" href="${ctx}/profile" aria-label="Hồ sơ của <c:out value='${sessionScope.account.fullName}'/>">
             <img class="account-avatar" width="36" height="36" alt=""
                  src="<c:out value='${empty sessionScope.account.avatar ? defaultAvatar : sessionScope.account.avatar}'/>"

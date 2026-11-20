@@ -3,7 +3,7 @@
   <div class="product-media">
     <c:choose>
       <c:when test="${not empty p.image}">
-        <img src="${ctx}/<c:out value='${p.image}'/>" alt="" loading="lazy">
+        <img src="<c:out value='${p.image.startsWith("https://") ? p.image : ctx.concat("/").concat(p.image)}'/>" alt="" loading="lazy">
       </c:when>
       <c:otherwise><span class="product-placeholder">Chưa có ảnh</span></c:otherwise>
     </c:choose>

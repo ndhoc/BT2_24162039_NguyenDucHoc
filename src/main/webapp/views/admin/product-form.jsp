@@ -49,7 +49,7 @@
     <form:field-error field="description"/>
 
     <c:if test="${not empty product.image}">
-      <img class="preview" src="${ctx}/<c:out value='${product.image}'/>" alt="Ảnh hiện tại của sản phẩm">
+      <img class="preview" src="<c:out value='${product.image.startsWith("https://") ? product.image : ctx.concat("/").concat(product.image)}'/>" alt="Ảnh hiện tại của sản phẩm">
     </c:if>
     <label for="image">Ảnh sản phẩm</label>
     <input class="form-control" id="image" name="image" type="file" accept="image/png,image/jpeg" data-max-mb="5"

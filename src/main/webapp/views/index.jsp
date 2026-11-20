@@ -8,45 +8,22 @@
 <main class="page">
   <section class="hero">
     <div class="hero-copy">
-      <p class="eyebrow">Lập trình Web · JPA · MVC · Multipart</p>
-      <h1>Mua sắm công nghệ<br>đơn giản và nhanh chóng</h1>
-      <p class="muted">Laptop, điện thoại và sách được quản lý bằng JPA/Hibernate trên SQL Server. Video mới nhất của cửa hàng được cập nhật ngay bên dưới.</p>
+      <p class="eyebrow">Shop 24162039</p>
+      <h1>Công nghệ cho<br>mỗi ngày của bạn.</h1>
+      <p class="muted">Khám phá điện thoại, laptop và những cuốn sách cho công việc, học tập và cuộc sống.</p>
       <div class="hero-actions">
         <a class="button" href="${ctx}/products">Xem sản phẩm</a>
-        <c:choose>
-          <c:when test="${not empty sessionScope.account}"><a class="button secondary" href="${ctx}/video/upload">Tải video lên</a></c:when>
-          <c:otherwise><a class="button secondary" href="${ctx}/register">Tạo tài khoản</a></c:otherwise>
-        </c:choose>
+        <a class="button secondary" href="#categories">Khám phá danh mục</a>
       </div>
     </div>
-    <div class="hero-art" aria-hidden="true"><span>JPA</span><span>Hibernate</span><span>Servlet</span></div>
+    <%-- Photo source: https://images.unsplash.com/photo-1496181133206-80ce9b88a853 --%>
+    <div class="hero-art"><img src="https://res.cloudinary.com/djr3qad5v/image/upload/v1795144660/shop-24162039/site-assets/store-hero-9bfe9a48366f2130.jpg" width="1200" height="800" alt="Laptop trong góc làm việc sáng sủa" fetchpriority="high"></div>
   </section>
 
-  <section class="section">
-    <div class="section-head"><h2>Video mới nhất</h2><a href="${ctx}/video">Xem tất cả video →</a></div>
-    <div class="video-grid">
-      <c:forEach items="${videoList}" var="v">
-        <article class="video-card">
-          <a class="video-media" href="${ctx}/video/detail?id=${v.id}">
-            <video preload="metadata" muted playsinline>
-              <c:url value="/video-file" var="fileUrl"><c:param name="fname" value="${v.fileName}"/></c:url>
-              <source src="${fileUrl}">
-            </video>
-            <span class="play-badge" aria-hidden="true">▶</span>
-          </a>
-          <div class="video-body">
-            <h3><a href="${ctx}/video/detail?id=${v.id}"><c:out value="${v.title}"/></a></h3>
-            <p class="desc"><c:out value="${v.description}"/></p>
-            <p class="muted"><c:out value="${v.user.username}"/> · <fmt:formatDate value="${v.createdAt}" pattern="dd/MM/yyyy HH:mm"/></p>
-          </div>
-        </article>
-      </c:forEach>
-      <c:if test="${empty videoList}"><p class="muted empty-state">Chưa có video nào. Hãy tải video đầu tiên lên.</p></c:if>
-    </div>
-  </section>
+
 
   <section class="section">
-    <div class="section-head"><h2>Danh mục sản phẩm</h2><a href="${ctx}/products">Xem tất cả →</a></div>
+    <div class="section-head" id="categories"><h2>Khám phá theo danh mục</h2><a href="${ctx}/products">Xem tất cả →</a></div>
     <div class="category-grid">
       <c:forEach items="${cateList}" var="cate">
         <a class="category-card" href="${ctx}/products?categoryId=${cate.id}">
@@ -70,7 +47,29 @@
       <c:forEach items="${productList}" var="p">
         <%@ include file="/views/components/product-card.jsp" %>
       </c:forEach>
-      <c:if test="${empty productList}"><p class="muted">Chưa có sản phẩm. Hãy chạy <code>database/seed.sql</code>.</p></c:if>
+      <c:if test="${empty productList}"><p class="muted empty-state">Cửa hàng đang cập nhật sản phẩm. Bạn hãy quay lại sau nhé.</p></c:if>
+    </div>
+  </section>
+  <section class="section">
+    <div class="section-head"><h2>Video mới nhất</h2><a href="${ctx}/video">Xem tất cả video →</a></div>
+    <div class="video-grid">
+      <c:forEach items="${videoList}" var="v">
+        <article class="video-card">
+          <a class="video-media" href="${ctx}/video/detail?id=${v.id}">
+            <video preload="metadata" muted playsinline>
+              <c:url value="/video-file" var="fileUrl"><c:param name="fname" value="${v.fileName}"/></c:url>
+              <source src="${fileUrl}">
+            </video>
+            <span class="play-badge" aria-hidden="true">▶</span>
+          </a>
+          <div class="video-body">
+            <h3><a href="${ctx}/video/detail?id=${v.id}"><c:out value="${v.title}"/></a></h3>
+            <p class="desc"><c:out value="${v.description}"/></p>
+            <p class="muted"><c:out value="${v.user.username}"/> · <fmt:formatDate value="${v.createdAt}" pattern="dd/MM/yyyy HH:mm"/></p>
+          </div>
+        </article>
+      </c:forEach>
+      <c:if test="${empty videoList}"><p class="muted empty-state">Chưa có video nào. Hãy tải video đầu tiên lên.</p></c:if>
     </div>
   </section>
 </main>

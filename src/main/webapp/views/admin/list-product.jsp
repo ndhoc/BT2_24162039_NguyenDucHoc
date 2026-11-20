@@ -34,7 +34,7 @@
           <tr>
             <td>
               <c:if test="${not empty p.image}">
-                <img class="thumb" src="${ctx}/<c:out value='${p.image}'/>" alt="" loading="lazy">
+                <img class="thumb" src="<c:out value='${p.image.startsWith("https://") ? p.image : ctx.concat("/").concat(p.image)}'/>" alt="" loading="lazy">
               </c:if>
             </td>
             <td><a href="${ctx}/products/detail?id=${p.id}"><c:out value="${p.name}"/></a></td>

@@ -9,6 +9,7 @@
   <title><sitemesh:write property="title" default="Shop 24162039" /></title>
   <link rel="stylesheet" href="${ctx}/templates/bootstrap/bootstrap.min.css?v=5.3.9">
   <link rel="stylesheet" href="${ctx}/css/style.css?v=profile-avatar">
+  <link rel="stylesheet" href="${ctx}/css/storefront.css?v=1">
   <sitemesh:write property="head" />
 </head>
 <body class="app-layout d-flex flex-column min-vh-100" data-layout="${adminLayout ? 'admin' : 'web'}">
@@ -25,5 +26,6 @@
   <%@ include file="/common/web/footer.jsp" %>
   <script src="${ctx}/js/form-validation.js?v=bt3" defer></script>
   <script src="${ctx}/js/avatar.js?v=1" defer></script>
+  <script src="${ctx}/js/navigation.js?v=1" defer></script>
 </body>
 </html>

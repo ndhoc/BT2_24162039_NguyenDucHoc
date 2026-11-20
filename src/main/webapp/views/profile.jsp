@@ -19,7 +19,7 @@
   <div class="profile-grid">
     <section class="card" aria-labelledby="profile-details">
       <h2 id="profile-details">Thông tin cá nhân</h2>
-      <c:set var="defaultAvatar" value="${ctx}/images/default-avatar.png" />
+      <c:set var="defaultAvatar" value="https://res.cloudinary.com/djr3qad5v/image/upload/v1795144636/shop-24162039/site-assets/default-avatar-6918b9f64af3540f.png" />
       <img class="profile-avatar" width="96" height="96" alt="Ảnh đại diện của bạn"
            src="<c:out value='${empty profileAccount.avatar ? defaultAvatar : profileAccount.avatar}'/>"
            data-avatar-fallback="${defaultAvatar}">

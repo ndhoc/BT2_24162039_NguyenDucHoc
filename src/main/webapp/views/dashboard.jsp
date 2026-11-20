@@ -44,7 +44,7 @@
         <tbody>
         <c:forEach items="${recentProducts}" var="p">
           <tr>
-            <td><c:if test="${not empty p.image}"><img class="thumb" src="${ctx}/<c:out value='${p.image}'/>" alt=""></c:if></td>
+            <td><c:if test="${not empty p.image}"><img class="thumb" src="<c:out value='${p.image.startsWith("https://") ? p.image : ctx.concat("/").concat(p.image)}'/>" alt=""></c:if></td>
             <td><a href="${ctx}/products/detail?id=${p.id}"><c:out value="${p.name}"/></a></td>
             <td><c:out value="${p.category.name}"/></td>
             <td class="nowrap"><fmt:formatNumber value="${p.price}" type="number" maxFractionDigits="2"/> ₫</td>
