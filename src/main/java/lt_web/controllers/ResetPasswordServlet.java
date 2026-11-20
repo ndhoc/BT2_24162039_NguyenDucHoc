@@ -1,6 +1,7 @@
 package lt_web.controllers;
 
 import java.io.IOException;
+import java.io.Serializable;
 
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -25,6 +26,7 @@ public class ResetPasswordServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     static final String PENDING = "pendingReset";
     static final String VERIFIED = "resetVerified";
+    private record VerifiedReset(int userId, long tokenId) implements Serializable { }
 
     private final UserService users = new UserServiceImpl();
     private final AccountVerificationService verification = new AccountVerificationServiceImpl();
@@ -59,17 +61,18 @@ public class ResetPasswordServlet extends HttpServlet {
                 session.removeAttribute(VERIFIED);
                 req.setAttribute("message", "Mã OTP mới đã được gửi tới " + mask(user.getEmail()) + ".");
             } else if ("verify-code".equals(action)) {
-                if (isVerified(session, user)) {
+                if (verifiedReset(session, user) != null) {
                     req.setAttribute("alert", "Mã OTP đã được xác nhận. Vui lòng nhập mật khẩu mới.");
                 } else {
-                    verification.verifyPasswordResetCode(user.getId(), req.getParameter("code"));
-                    session.setAttribute(VERIFIED, user.getId());
+                    long tokenId = verification.verifyPasswordResetCode(user.getId(), req.getParameter("code"));
+                    session.setAttribute(VERIFIED, new VerifiedReset(user.getId(), tokenId));
                     req.setAttribute("message", "Xác nhận mã OTP thành công. Hãy đặt mật khẩu mới.");
                 }
             } else if ("set-password".equals(action)) {
-                if (!isVerified(session, user))
+                VerifiedReset verified = verifiedReset(session, user);
+                if (verified == null)
                     throw new IllegalArgumentException("Vui lòng xác nhận mã OTP trước khi đặt mật khẩu mới.");
-                verification.resetPassword(user.getId(), req.getParameter("password"), req.getParameter("confirm"));
+                verification.resetPassword(user.getId(), verified.tokenId(), req.getParameter("password"), req.getParameter("confirm"));
                 session.removeAttribute(PENDING);
                 session.removeAttribute(VERIFIED);
                 resp.sendRedirect(req.getContextPath() + "/login?reset=1");
@@ -89,7 +92,7 @@ public class ResetPasswordServlet extends HttpServlet {
 
     private void render(HttpServletRequest req, HttpServletResponse resp, HttpSession session, User user)
             throws ServletException, IOException {
-        req.setAttribute("step", isVerified(session, user) ? "password" : "code");
+        req.setAttribute("step", verifiedReset(session, user) != null ? "password" : "code");
         req.setAttribute("username", user.getUsername());
         req.setAttribute("maskedEmail", mask(user.getEmail()));
         JspView.render(req, resp, "/views/reset-password.jsp");
@@ -100,8 +103,9 @@ public class ResetPasswordServlet extends HttpServlet {
         return userId instanceof Integer id ? users.getById(id) : null;
     }
 
-    private boolean isVerified(HttpSession session, User user) {
-        return Integer.valueOf(user.getId()).equals(session.getAttribute(VERIFIED));
+    private VerifiedReset verifiedReset(HttpSession session, User user) {
+        Object value = session.getAttribute(VERIFIED);
+        return value instanceof VerifiedReset verified && verified.userId() == user.getId() ? verified : null;
     }
 
     private static String mask(String email) {

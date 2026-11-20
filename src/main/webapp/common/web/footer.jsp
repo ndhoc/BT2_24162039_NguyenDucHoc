@@ -25,6 +25,7 @@
               <li><a href="${ctx}/forgot-password">Quên mật khẩu</a></li>
             </c:when>
             <c:otherwise>
+              <li><a href="${ctx}/profile">Hồ sơ</a></li>
               <li><a href="${ctx}/video/upload">Tải video</a></li>
               <c:if test="${sessionScope.account.roleid == 1 or sessionScope.account.roleid == 2}">
                 <li><a href="${ctx}/dashboard">Dashboard</a></li>

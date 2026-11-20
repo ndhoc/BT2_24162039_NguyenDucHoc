@@ -40,9 +40,8 @@ public final class ImageStorage {
     }
 
     private static String save(Part part, Path directory, String field) throws IOException {
-        if (part == null || part.getSize() == 0) return null;
-        if (part.getSize() > MAX_SIZE) throw new FieldError(field, "Ảnh tối đa 5 MB.");
-        BufferedImage image = read(part, field);
+        BufferedImage image = readUpload(part, field);
+        if (image == null) return null;
         String filename = UUID.randomUUID() + ".png";
         Path target = Files.createDirectories(directory).resolve(filename);
         try {
@@ -55,7 +54,9 @@ public final class ImageStorage {
         }
     }
 
-    private static BufferedImage read(Part part, String field) throws IOException {
+    public static BufferedImage readUpload(Part part, String field) throws IOException {
+        if (part == null || part.getSize() == 0) return null;
+        if (part.getSize() > MAX_SIZE) throw new FieldError(field, "Ảnh tối đa 5 MB.");
         // Read dimensions before decoding to reject oversized compressed images.
         try (InputStream input = part.getInputStream(); ImageInputStream stream = ImageIO.createImageInputStream(input)) {
             var readers = ImageIO.getImageReaders(stream);

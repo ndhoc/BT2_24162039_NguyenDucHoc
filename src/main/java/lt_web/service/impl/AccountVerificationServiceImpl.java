@@ -30,7 +30,9 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
 
     @Override
     public void activate(int userId, String code) {
-        User user = verify(userId, OtpToken.PURPOSE_ACTIVATION, code);
+        verify(userId, OtpToken.PURPOSE_ACTIVATION, code);
+        User user = users.getById(userId);
+        if (user == null) throw new IllegalArgumentException("Tài khoản không tồn tại.");
         user.setActive(Boolean.TRUE);
         users.update(user);
         tokens.delete(userId, OtpToken.PURPOSE_ACTIVATION);
@@ -42,22 +44,15 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
     }
 
     @Override
-    public void verifyPasswordResetCode(int userId, String code) {
-        verify(userId, OtpToken.PURPOSE_RESET, code);
+    public long verifyPasswordResetCode(int userId, String code) {
+        return verify(userId, OtpToken.PURPOSE_RESET, code).getId();
     }
 
     @Override
-    public void resetPassword(int userId, String password, String confirm) {
+    public void resetPassword(int userId, long tokenId, String password, String confirm) {
         FormValidation.newPassword(password, confirm);
-        OtpToken token = tokens.find(userId, OtpToken.PURPOSE_RESET);
-        if (token == null || token.getExpiresAt().isBefore(Instant.now()))
+        if (!tokens.completePasswordReset(userId, tokenId, PasswordUtils.hash(password)))
             throw new IllegalArgumentException(OTP_EXPIRED);
-        User user = users.getById(userId);
-        if (user == null) throw new IllegalArgumentException("Tài khoản không tồn tại.");
-        user.setPassword(PasswordUtils.hash(password));
-        user.setActive(Boolean.TRUE);
-        users.update(user);
-        tokens.delete(userId, OtpToken.PURPOSE_RESET);
     }
 
     private void issue(User user, String purpose) {
@@ -68,7 +63,7 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
         MailSender.sendOtp(user.getEmail(), user.getFullName(), code, purpose);
     }
 
-    private User verify(int userId, String purpose, String code) {
+    private OtpToken verify(int userId, String purpose, String code) {
         if (code == null || !code.trim().matches("[0-9]{6}"))
             throw new FieldError("code", "Mã OTP phải gồm 6 chữ số.");
         OtpToken token = tokens.find(userId, purpose);
@@ -84,8 +79,6 @@ public class AccountVerificationServiceImpl implements AccountVerificationServic
             tokens.incrementAttempts(token.getId());
             throw new FieldError("code", OTP_INVALID);
         }
-        User user = users.getById(userId);
-        if (user == null) throw new IllegalArgumentException("Tài khoản không tồn tại.");
-        return user;
+        return token;
     }
 }

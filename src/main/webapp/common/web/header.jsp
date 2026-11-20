@@ -13,7 +13,13 @@
           <c:if test="${sessionScope.account.roleid == 1 or sessionScope.account.roleid == 2}">
             <a class="nav-link" href="${ctx}/dashboard">Dashboard</a>
           </c:if>
-          <span class="who"><c:out value="${sessionScope.account.fullName}" /></span>
+          <c:set var="defaultAvatar" value="${ctx}/images/default-avatar.png" />
+          <a class="nav-link account-link" href="${ctx}/profile" aria-label="Hồ sơ của <c:out value='${sessionScope.account.fullName}'/>">
+            <img class="account-avatar" width="36" height="36" alt=""
+                 src="<c:out value='${empty sessionScope.account.avatar ? defaultAvatar : sessionScope.account.avatar}'/>"
+                 data-avatar-fallback="${defaultAvatar}">
+            <span class="account-name"><c:out value="${sessionScope.account.fullName}" /></span>
+          </a>
           <form action="${ctx}/logout" method="post" class="inline">
             <input type="hidden" name="csrf" value="${sessionScope.csrf}">
             <button class="link-button" type="submit">Đăng xuất</button>

@@ -1,6 +1,5 @@
 package lt_web.service.impl;
 
-import java.sql.SQLException;
 import java.time.LocalDate;
 
 import lt_web.entity.User;
@@ -51,17 +50,10 @@ public class UserServiceImpl implements UserService {
         user.setRoleid(5); user.setCreatedDate(LocalDate.now()); user.setActive(Boolean.FALSE);
         try { repository.insert(user); }
         catch (DataAccessException e) {
-            if (isDuplicate(e)) throw new IllegalArgumentException("Tài khoản, email hoặc số điện thoại đã tồn tại.");
+            if (e.isDuplicateKey()) throw new IllegalArgumentException("Tài khoản, email hoặc số điện thoại đã tồn tại.");
             throw e;
         }
         return user;
     }
 
-    private static boolean isDuplicate(Throwable error) {
-        for (Throwable cause = error; cause != null; cause = cause.getCause()) {
-            if (cause instanceof SQLException sql && (sql.getErrorCode() == 2601 || sql.getErrorCode() == 2627))
-                return true;
-        }
-        return false;
-    }
 }

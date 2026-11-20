@@ -20,6 +20,18 @@ GO
 IF COL_LENGTH(N'dbo.[User]', N'is_active') IS NULL
 ALTER TABLE dbo.[User] ADD is_active BIT NOT NULL CONSTRAINT DF_User_is_active DEFAULT 1;
 GO
+IF COL_LENGTH(N'dbo.[User]', N'avatar_public_id') IS NULL
+ALTER TABLE dbo.[User] ADD avatar_public_id NVARCHAR(255) NULL;
+GO
+IF OBJECT_ID(N'dbo.ProfileEmailChange', N'U') IS NULL
+CREATE TABLE dbo.ProfileEmailChange (
+    user_id INT PRIMARY KEY REFERENCES dbo.[User](id) ON DELETE CASCADE,
+    new_email NVARCHAR(255) NOT NULL,
+    code_hash CHAR(64) NOT NULL,
+    expires_at DATETIMEOFFSET NOT NULL,
+    attempts INT NOT NULL DEFAULT 0
+);
+GO
 IF OBJECT_ID(N'dbo.Category', N'U') IS NULL
 CREATE TABLE dbo.Category (
     cate_id INT IDENTITY(1,1) PRIMARY KEY,

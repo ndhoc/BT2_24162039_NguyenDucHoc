@@ -1,0 +1,4 @@
+# For Eclipse, copy this file to cloudinary.properties in the same directory.
+# For a packaged WAR, place the file under CATALINA_BASE/conf instead.
+# Format: cloudinary://API_KEY:API_SECRET@CLOUD_NAME
+cloudinary.url=

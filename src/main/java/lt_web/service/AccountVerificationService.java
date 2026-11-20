@@ -12,8 +12,8 @@ public interface AccountVerificationService {
     void sendPasswordResetOtp(User user);
 
     /** Chỉ kiểm tra mã, chưa đổi mật khẩu; dùng cho bước 1 của quên mật khẩu. */
-    void verifyPasswordResetCode(int userId, String code);
+    long verifyPasswordResetCode(int userId, String code);
 
     /** Bước 2: đổi mật khẩu sau khi mã đã được xác thực ở bước 1. */
-    void resetPassword(int userId, String password, String confirm);
+    void resetPassword(int userId, long tokenId, String password, String confirm);
 }

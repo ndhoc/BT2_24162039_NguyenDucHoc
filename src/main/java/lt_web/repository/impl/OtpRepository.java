@@ -1,5 +1,8 @@
 package lt_web.repository.impl;
 
+import java.time.Instant;
+
+import jakarta.persistence.LockModeType;
 import lt_web.entity.OtpToken;
 import lt_web.entity.User;
 import lt_web.repository.IOtpRepository;
@@ -21,11 +24,14 @@ public class OtpRepository implements IOtpRepository {
     public void replace(OtpToken token) {
         int userId = token.getUser().getId();
         JpaConfig.write(em -> {
+            User account = em.find(User.class, userId, LockModeType.PESSIMISTIC_WRITE);
+            if (account == null || !account.getEmail().equals(token.getUser().getEmail()))
+                throw new IllegalArgumentException("Thông tin tài khoản đã thay đổi. Vui lòng yêu cầu mã OTP mới.");
             em.createQuery("delete from OtpToken t where t.user.id = :userId and t.purpose = :purpose")
                     .setParameter("userId", userId)
                     .setParameter("purpose", token.getPurpose())
                     .executeUpdate();
-            token.setUser(em.getReference(User.class, userId));
+            token.setUser(account);
             em.persist(token);
         });
     }
@@ -44,5 +50,20 @@ public class OtpRepository implements IOtpRepository {
         JpaConfig.write(em -> em.createQuery("update OtpToken t set t.attempts = t.attempts + 1 where t.id = :id")
                 .setParameter("id", id)
                 .executeUpdate());
+    }
+
+    @Override
+    public boolean completePasswordReset(int userId, long tokenId, String passwordHash) {
+        return JpaConfig.writeResult(em -> {
+            User account = em.find(User.class, userId, LockModeType.PESSIMISTIC_WRITE);
+            OtpToken token = em.find(OtpToken.class, tokenId);
+            if (account == null || token == null || token.getUser().getId() != userId
+                    || !OtpToken.PURPOSE_RESET.equals(token.getPurpose()) || !token.getExpiresAt().isAfter(Instant.now()))
+                return false;
+            account.setPassword(passwordHash);
+            account.setActive(Boolean.TRUE);
+            em.remove(token);
+            return true;
+        });
     }
 }

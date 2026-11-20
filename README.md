@@ -109,3 +109,19 @@ Khi sửa danh mục hoặc video, có thể giữ lại tệp hiện tại. Má
 - Quản trị viên mở **Quản lý sản phẩm** từ dashboard để tìm, thêm, sửa hoặc xóa sản phẩm. Biểu mẫu có tên, giá, danh mục, mô tả và ảnh.
 - Ảnh PNG hoặc JPEG được kiểm tra trước khi lưu vào `uploads/product/` của Tomcat, với giới hạn 5 MB và 4096 × 4096 pixel. Khi sửa sản phẩm, có thể giữ ảnh hiện tại.
 - Thẻ sản phẩm ở trang chủ và trang danh mục mở `/products/detail?id=...`, hiển thị ảnh, tên, giá, danh mục và mô tả.
+
+### Hồ sơ cá nhân
+
+- Sau khi đăng nhập, mở **Hồ sơ** từ tên tài khoản hoặc menu chân trang để cập nhật họ tên, số điện thoại và ảnh đại diện. Ảnh PNG hoặc JPEG tối đa 5 MB được nhận qua Multipart và tải lên Cloudinary. Bỏ trống trường ảnh để giữ ảnh hiện tại.
+- Khi đổi email, hệ thống gửi OTP gồm 6 chữ số đến địa chỉ mới. Email tài khoản được cập nhật sau khi xác nhận mã hợp lệ. Mã có hiệu lực trong 10 phút và hết hiệu lực sau 5 lần nhập sai.
+- Chạy lại `database/schema.sql` khi nâng cấp cơ sở dữ liệu đã có. Dùng phần cấu hình SMTP ở trên để gửi OTP qua email. Trong chế độ phát triển, mã được ghi vào `logs/otp-dev.log`.
+
+#### Cấu hình Cloudinary
+
+Khi chạy trong Spring Tools/Eclipse, sao chép [`cloudinary.properties.example`](src/main/resources/cloudinary.properties.example) ngay trong thư mục `src/main/resources` và đặt tên bản sao là `cloudinary.properties`. Điền thông tin từ **Settings → API Keys** trên Cloudinary rồi khởi động lại Tomcat.
+
+```properties
+cloudinary.url=cloudinary://API_KEY:API_SECRET@CLOUD_NAME
+```
+
+File chứa thông tin thật được Git bỏ qua và Maven loại khỏi WAR. Khi triển khai bằng WAR, đặt cùng file này tại `CATALINA_BASE/conf/cloudinary.properties`. Biến môi trường `CLOUDINARY_URL` là cấu hình dự phòng khi chưa điền URL trong file.

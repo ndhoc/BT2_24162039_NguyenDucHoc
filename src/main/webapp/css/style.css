@@ -182,6 +182,28 @@ input[type=file] { padding: 9px; background: #f8fafc; }
     .app-footer-intro { grid-column: 1 / -1; }
     .app-footer-nav a { min-height: 44px; }
 }
+.profile-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; align-items: start; }
+.profile-grid .card { margin: 0; min-width: 0; }
+.profile-grid h2 { margin-top: 0; }
+.profile-grid strong { overflow-wrap: anywhere; }
+.account-avatar, .profile-avatar {
+    display: block;
+    flex-shrink: 0;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #eff6ff;
+    border: 1px solid #cbd5e1;
+}
+.account-avatar { width: 36px; height: 36px; }
+.profile-avatar { width: 96px; height: 96px; }
+.app-nav .account-link { gap: 8px; max-width: 100%; border-radius: 8px; }
+.account-link:hover { background: #eff6ff; text-decoration: none; }
+.account-link:focus-visible { outline: 2px solid #1d4ed8; outline-offset: 2px; }
+.account-name { min-width: 0; overflow-wrap: anywhere; }
+.profile-otp { border-top: 1px solid #e2e8f0; padding-top: 12px; margin-bottom: 0; }
+@media (max-width: 800px) {
+    .profile-grid { grid-template-columns: 1fr; }
+}
 .app-skip-link { position: absolute; z-index: 20; top: 12px; left: 12px; background: #fff; padding: 8px 12px; }
 .app-skip-link:not(:focus) { clip-path: inset(50%); }
 .field-feedback { display: none; margin: 0; color: #991b1b; font-size: .875rem; }

@@ -24,6 +24,7 @@
         <class>lt_web.entity.Product</class>
         <class>lt_web.entity.RememberToken</class>
         <class>lt_web.entity.OtpToken</class>
+        <class>lt_web.entity.ProfileEmailChange</class>
         <class>lt_web.entity.Video</class>
         <properties>
             <property name="jakarta.persistence.jdbc.url"

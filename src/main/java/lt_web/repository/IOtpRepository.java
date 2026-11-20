@@ -7,4 +7,5 @@ public interface IOtpRepository {
     void replace(OtpToken token);
     void delete(int userId, String purpose);
     void incrementAttempts(long id);
+    boolean completePasswordReset(int userId, long tokenId, String passwordHash);
 }

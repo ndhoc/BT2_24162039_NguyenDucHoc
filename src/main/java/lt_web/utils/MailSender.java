@@ -19,6 +19,8 @@ import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import jakarta.mail.internet.MimeMultipart;
 import jakarta.mail.internet.MimeBodyPart;
+import lt_web.entity.OtpToken;
+import lt_web.entity.ProfileEmailChange;
 
 /**
  * Gửi email OTP qua SMTP. Khi chưa cấu hình mail.smtp.host, OTP được ghi vào
@@ -78,10 +80,16 @@ public final class MailSender {
     }
 
     public static void sendOtp(String to, String fullName, String code, String purpose) {
-        String subject = "ACTIVATION".equals(purpose)
-                ? "Kích hoạt tài khoản Shop 24162039"
-                : "Đặt lại mật khẩu Shop 24162039";
-        String action = "ACTIVATION".equals(purpose) ? "kích hoạt tài khoản" : "đặt lại mật khẩu";
+        String subject = switch (purpose) {
+            case OtpToken.PURPOSE_ACTIVATION -> "Kích hoạt tài khoản Shop 24162039";
+            case ProfileEmailChange.PURPOSE -> "Xác nhận email mới Shop 24162039";
+            default -> "Đặt lại mật khẩu Shop 24162039";
+        };
+        String action = switch (purpose) {
+            case OtpToken.PURPOSE_ACTIVATION -> "kích hoạt tài khoản";
+            case ProfileEmailChange.PURPOSE -> "xác nhận email mới";
+            default -> "đặt lại mật khẩu";
+        };
         if (!isConfigured()) {
             writeDevLog(to, code, purpose);
             return;

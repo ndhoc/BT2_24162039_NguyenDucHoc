@@ -37,6 +37,9 @@ public class User implements Serializable {
     @Column(length = 255)
     private String avatar;
 
+    @Column(name = "avatar_public_id", length = 255)
+    private String avatarPublicId;
+
     @Column(nullable = false)
     private int roleid;
 
@@ -85,6 +88,8 @@ public class User implements Serializable {
     public void setPassword(String password) { this.password = password; }
     public String getAvatar() { return avatar; }
     public void setAvatar(String avatar) { this.avatar = avatar; }
+    public String getAvatarPublicId() { return avatarPublicId; }
+    public void setAvatarPublicId(String avatarPublicId) { this.avatarPublicId = avatarPublicId; }
     public int getRoleid() { return roleid; }
     public void setRoleid(int roleid) { this.roleid = roleid; }
     public String getPhone() { return phone; }
